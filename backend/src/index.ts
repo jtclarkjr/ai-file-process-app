@@ -1,14 +1,14 @@
 import { Hono } from "hono";
+import { serveStatic } from "hono/bun";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { serveStatic } from "hono/bun";
 import { config } from "./config";
-import { health, files } from "./routes";
+import { files, health } from "./routes";
 import {
-  OpenAiProvider,
+  type AiProvider,
   AnthropicProvider,
   FileExtractor,
-  type AiProvider,
+  OpenAiProvider,
 } from "./services";
 
 // Initialize providers
@@ -20,18 +20,20 @@ if (config.openaiApiKey) {
   openaiProvider = new OpenAiProvider(
     config.openaiApiKey,
     config.openaiModel,
-    config.aiTimeoutMs
+    config.aiTimeoutMs,
   );
 } else {
   console.warn("No OpenAI API key configured");
 }
 
 if (config.anthropicApiKey) {
-  console.log(`Anthropic provider configured with model: ${config.anthropicModel}`);
+  console.log(
+    `Anthropic provider configured with model: ${config.anthropicModel}`,
+  );
   anthropicProvider = new AnthropicProvider(
     config.anthropicApiKey,
     config.anthropicModel,
-    config.aiTimeoutMs
+    config.aiTimeoutMs,
   );
 } else {
   console.warn("No Anthropic API key configured");
@@ -39,7 +41,7 @@ if (config.anthropicApiKey) {
 
 if (!openaiProvider && !anthropicProvider) {
   console.warn(
-    "No AI providers configured. Set OPENAI_API_KEY or ANTHROPIC_API_KEY."
+    "No AI providers configured. Set OPENAI_API_KEY or ANTHROPIC_API_KEY.",
   );
 }
 
@@ -67,7 +69,7 @@ app.route("/api/files", files);
 // Static files (SvelteKit SPA) - check if directory exists
 const staticDir = "./static";
 try {
-  const stat = Bun.file(staticDir + "/index.html");
+  const stat = Bun.file(`${staticDir}/index.html`);
   if (await stat.exists()) {
     console.log("Serving static files from ./static");
 
@@ -76,7 +78,7 @@ try {
 
     // SPA fallback - serve index.html for all unmatched routes
     app.get("*", async (c) => {
-      const file = Bun.file(staticDir + "/index.html");
+      const file = Bun.file(`${staticDir}/index.html`);
       return c.html(await file.text());
     });
   }

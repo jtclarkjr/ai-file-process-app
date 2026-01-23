@@ -1,20 +1,19 @@
 import { Hono } from "hono";
-import type { AiProvider } from "../services";
+import type { AiProvider, FileExtractor } from "../services";
 import {
-  FileExtractor,
-  FileTooLargeError,
-  UnsupportedFileTypeError,
-  MimeTypeMismatchError,
   DecompressionBombError,
   FileExtractionError,
+  FileTooLargeError,
+  MimeTypeMismatchError,
+  UnsupportedFileTypeError,
 } from "../services";
 import {
+  errorResponse,
   getAllSupported,
   isImage,
   type ProcessResponse,
   type ProvidersResponse,
   type SupportedTypesResponse,
-  errorResponse,
 } from "../types";
 
 interface FilesContext {
@@ -47,7 +46,7 @@ files.post("/process", async (c) => {
     if (!provider || !operation) {
       return c.json(
         errorResponse("Missing required query params: provider, operation"),
-        400
+        400,
       );
     }
 
@@ -64,14 +63,14 @@ files.post("/process", async (c) => {
     const contentType = file.type || null;
 
     console.log(
-      `Processing file: ${fileName} (${fileData.length} bytes) with provider=${provider}, operation=${operation}`
+      `Processing file: ${fileName} (${fileData.length} bytes) with provider=${provider}, operation=${operation}`,
     );
 
     // Validate and detect file type
     const fileType = await extractor.validateAndDetectType(
       fileData,
       contentType,
-      fileName
+      fileName,
     );
 
     // Get the appropriate provider
@@ -89,9 +88,9 @@ files.post("/process", async (c) => {
     } else {
       return c.json(
         errorResponse(
-          `Unknown provider: ${provider}. Valid options: openai, anthropic`
+          `Unknown provider: ${provider}. Valid options: openai, anthropic`,
         ),
-        400
+        400,
       );
     }
 
@@ -99,14 +98,17 @@ files.post("/process", async (c) => {
     if (isImage(fileType) && !aiProvider.supportsVision) {
       return c.json(
         errorResponse(
-          `Provider ${aiProvider.name} does not support vision/image processing`
+          `Provider ${aiProvider.name} does not support vision/image processing`,
         ),
-        400
+        400,
       );
     }
 
     // Extract content from file
-    const { content, originalSize } = await extractor.extract(fileData, fileType);
+    const { content, originalSize } = await extractor.extract(
+      fileData,
+      fileType,
+    );
 
     // Process with AI provider
     const aiResponse = await aiProvider.process({

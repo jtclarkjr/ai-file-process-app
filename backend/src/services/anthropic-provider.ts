@@ -1,6 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { toPrompt, parseOperation } from "../types";
-import type { AiProvider, AiRequest, AiResponse, FileContent } from "./ai-provider";
+import { parseOperation, toPrompt } from "../types";
+import type {
+  AiProvider,
+  AiRequest,
+  AiResponse,
+  FileContent,
+} from "./ai-provider";
 
 type ImageMediaType = "image/jpeg" | "image/png" | "image/gif" | "image/webp";
 
@@ -28,7 +33,11 @@ export class AnthropicProvider implements AiProvider {
     const operation = parseOperation(request.operation);
     const prompt = toPrompt(operation, request.customPrompt);
 
-    const content = this.buildContent(request.content, prompt, request.fileName);
+    const content = this.buildContent(
+      request.content,
+      prompt,
+      request.fileName,
+    );
 
     const response = await this.client.messages.create({
       model: this.model,
@@ -59,7 +68,7 @@ export class AnthropicProvider implements AiProvider {
   private buildContent(
     content: FileContent,
     prompt: string,
-    fileName?: string | null
+    fileName?: string | null,
   ): Anthropic.MessageParam["content"] {
     if (content.type === "text") {
       let fullText = `${prompt}\n\n`;
@@ -74,7 +83,7 @@ export class AnthropicProvider implements AiProvider {
     // Image content
     if (!this.supportsVision) {
       throw new Error(
-        `Model ${this.model} does not support vision/image processing`
+        `Model ${this.model} does not support vision/image processing`,
       );
     }
 

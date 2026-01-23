@@ -1,4 +1,5 @@
-# File Processing AI Application  
+# File Processing AI Application
+
 ## Business & Functional Requirements (No File Retention)
 
 ---
@@ -57,12 +58,14 @@ The system allows users to upload files for AI-based processing (e.g., extractio
 ### 4.2 No File Retention Policy
 
 The system **MUST NOT**:
+
 - Write uploaded files to disk (`/tmp`, temp directories, caches)
 - Store uploaded files in object storage (e.g., S3, GCS)
 - Log raw file contents
 - Persist file data in queues, databases, or caches
 
 The system **MAY**:
+
 - Hold file data **in memory only** for the duration of processing
 - Use bounded, short-lived buffers strictly required for streaming
 
@@ -90,11 +93,13 @@ The system **MAY**:
 The system must support at least one of the following modes:
 
 #### Inline Processing
+
 - File is processed within a single request lifecycle
 - Connection remains open until completion
 - Best for fast processing workloads
 
 #### Deferred Processing (Optional)
+
 - If used, only **metadata** may be queued
 - Raw file data must never be stored or queued
 - Client re-upload may be required for retries
@@ -140,12 +145,14 @@ The system must support at least one of the following modes:
 ### 5.3 Observability
 
 The system must log:
+
 - Request IDs
 - Processing duration
 - File metadata (name, size, type — no content)
 - AI provider usage metrics (tokens, latency)
 
 The system must **not** log:
+
 - Raw file contents
 - Extracted text unless explicitly anonymized
 
@@ -173,6 +180,7 @@ The system must **not** log:
 ## 7. Explicit Non-Goals
 
 The system is **not required** to:
+
 - Provide long-term storage or retrieval of uploaded files
 - Support resumable uploads without re-uploading
 - Act as a general file hosting or storage platform
@@ -189,6 +197,5 @@ The system is **not required** to:
 
 ## 9. Summary
 
-This application prioritizes **privacy, safety, and correctness** over convenience by enforcing a strict **no-file-retention** model.  
+This application prioritizes **privacy, safety, and correctness** over convenience by enforcing a strict **no-file-retention** model.\
 All architecture, business logic, and operational decisions must align with this principle.
-

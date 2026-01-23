@@ -1,13 +1,13 @@
 import { fileTypeFromBuffer } from "file-type";
-import pdf from "pdf-parse";
 import mammoth from "mammoth";
+import pdf from "pdf-parse";
 import { config } from "../config";
 import {
-  SupportedFileType,
-  fromMime,
   fromExtension,
-  toMime,
+  fromMime,
   isImage,
+  SupportedFileType,
+  toMime,
 } from "../types";
 import type { FileContent } from "./ai-provider";
 
@@ -38,7 +38,7 @@ export class MimeTypeMismatchError extends Error {
 export class DecompressionBombError extends Error {
   constructor(ratio: number, maxRatio: number) {
     super(
-      `Decompression bomb detected: ratio ${ratio}:1 exceeds maximum of ${maxRatio}:1`
+      `Decompression bomb detected: ratio ${ratio}:1 exceeds maximum of ${maxRatio}:1`,
     );
     this.name = "DecompressionBombError";
   }
@@ -61,7 +61,7 @@ export class FileExtractor {
   async validateAndDetectType(
     data: Uint8Array,
     declaredMime?: string | null,
-    fileName?: string | null
+    fileName?: string | null,
   ): Promise<SupportedFileType> {
     // Check file size
     if (data.length > config.maxFileSizeBytes) {
@@ -90,7 +90,7 @@ export class FileExtractor {
 
     if (!fileType) {
       throw new UnsupportedFileTypeError(
-        detectedMime ?? declaredMime ?? "unknown"
+        detectedMime ?? declaredMime ?? "unknown",
       );
     }
 
@@ -114,7 +114,7 @@ export class FileExtractor {
    */
   async extract(
     data: Uint8Array,
-    fileType: SupportedFileType
+    fileType: SupportedFileType,
   ): Promise<{ content: FileContent; originalSize: number }> {
     const originalSize = data.length;
 
@@ -168,7 +168,7 @@ export class FileExtractor {
 
       if (!result.text.trim()) {
         throw new FileExtractionError(
-          "PDF contains no extractable text (may be image-based)"
+          "PDF contains no extractable text (may be image-based)",
         );
       }
 
@@ -176,7 +176,7 @@ export class FileExtractor {
     } catch (error) {
       if (error instanceof FileExtractionError) throw error;
       throw new FileExtractionError(
-        `PDF extraction failed: ${error instanceof Error ? error.message : String(error)}`
+        `PDF extraction failed: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }
@@ -194,7 +194,7 @@ export class FileExtractor {
     } catch (error) {
       if (error instanceof FileExtractionError) throw error;
       throw new FileExtractionError(
-        `DOCX parsing failed: ${error instanceof Error ? error.message : String(error)}`
+        `DOCX parsing failed: ${error instanceof Error ? error.message : String(error)}`,
       );
     }
   }

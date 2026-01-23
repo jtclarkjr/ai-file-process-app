@@ -44,7 +44,9 @@ export const SupportedTypesResponseSchema = z.object({
   data: z.array(SupportedTypeInfoSchema),
 });
 
-export type SupportedTypesResponse = z.infer<typeof SupportedTypesResponseSchema>;
+export type SupportedTypesResponse = z.infer<
+  typeof SupportedTypesResponseSchema
+>;
 
 export const ProviderInfoSchema = z.object({
   id: z.string(),

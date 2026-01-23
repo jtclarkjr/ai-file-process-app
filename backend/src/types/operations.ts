@@ -28,7 +28,7 @@ const operationPrompts: Record<Exclude<Operation, "custom">, string> = {
 
 export function toPrompt(
   operation: Operation,
-  customPrompt?: string | null
+  customPrompt?: string | null,
 ): string {
   if (operation === Operation.CUSTOM) {
     return customPrompt ?? "Process this content.";
@@ -45,6 +45,6 @@ export function parseOperation(value: string): Operation {
   }
 
   throw new Error(
-    `Invalid operation: ${value}. Valid options: ${validOps.join(", ")}`
+    `Invalid operation: ${value}. Valid options: ${validOps.join(", ")}`,
   );
 }

@@ -1,6 +1,11 @@
 import OpenAI from "openai";
-import { toPrompt, parseOperation } from "../types";
-import type { AiProvider, AiRequest, AiResponse, FileContent } from "./ai-provider";
+import { parseOperation, toPrompt } from "../types";
+import type {
+  AiProvider,
+  AiRequest,
+  AiResponse,
+  FileContent,
+} from "./ai-provider";
 
 /**
  * OpenAI provider implementation
@@ -29,14 +34,22 @@ export class OpenAiProvider implements AiProvider {
 
   private get usesMaxCompletionTokens(): boolean {
     // GPT-5+ models use max_completion_tokens instead of max_tokens
-    return this.model.includes("gpt-5") || this.model.includes("o1") || this.model.includes("o3");
+    return (
+      this.model.includes("gpt-5") ||
+      this.model.includes("o1") ||
+      this.model.includes("o3")
+    );
   }
 
   async process(request: AiRequest): Promise<AiResponse> {
     const operation = parseOperation(request.operation);
     const prompt = toPrompt(operation, request.customPrompt);
 
-    const messages = this.buildMessages(request.content, prompt, request.fileName);
+    const messages = this.buildMessages(
+      request.content,
+      prompt,
+      request.fileName,
+    );
 
     const params: OpenAI.ChatCompletionCreateParamsNonStreaming = {
       model: this.model,
@@ -69,7 +82,7 @@ export class OpenAiProvider implements AiProvider {
   private buildMessages(
     content: FileContent,
     prompt: string,
-    fileName?: string | null
+    fileName?: string | null,
   ): OpenAI.ChatCompletionMessageParam[] {
     if (content.type === "text") {
       let fullPrompt = `${prompt}\n\n`;
@@ -84,7 +97,7 @@ export class OpenAiProvider implements AiProvider {
     // Image content
     if (!this.supportsVision) {
       throw new Error(
-        `Model ${this.model} does not support vision/image processing`
+        `Model ${this.model} does not support vision/image processing`,
       );
     }
 
