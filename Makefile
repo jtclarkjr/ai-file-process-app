@@ -1,4 +1,4 @@
-.PHONY: dev frontend backend db wasm build clean help
+.PHONY: dev frontend backend build clean help
 .PHONY: docker docker-up docker-down docker-build docker-logs
 .PHONY: prod prod-up prod-down prod-build prod-logs
 .PHONY: fmt lint test check
@@ -16,65 +16,34 @@ dev: ## Run frontend + backend locally
 frontend: ## Run frontend only
 	bun run dev:frontend
 
-backend: ## Run backend only
-	bun run dev:backend
-
-backend-watch: ## Run backend with hot reload (requires cargo-watch)
-	cd backend && cargo watch -x run
-
-# ============================================================================
-# Database
-# ============================================================================
-
-db: ## Start PostgreSQL container
-	docker-compose up -d postgres
-
-db-ui: ## Start pgAdmin UI
-	docker-compose up -d pgadmin
-
-db-down: ## Stop PostgreSQL container
-	docker-compose down
-
-db-logs: ## Show PostgreSQL logs
-	docker-compose logs -f postgres
-
-# ============================================================================
-# WASM
-# ============================================================================
-
-wasm: ## Build WASM module
-	bun run wasm:build
-
-wasm-watch: ## Build WASM and watch for changes
-	cd wasm && cargo watch -s 'wasm-pack build --target web --out-dir ../frontend/src/lib/wasm/pkg'
+backend: ## Run backend only (uvicorn with hot reload)
+	cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
 
 # ============================================================================
 # Build
 # ============================================================================
 
-build: ## Build everything (wasm + frontend + backend)
-	bun run build
+build: build-frontend ## Build everything (frontend)
+	@echo "Build complete!"
 
 build-frontend: ## Build frontend only
-	bun run build:frontend
-
-build-backend: ## Build backend only (release)
-	bun run build:backend
+	cd frontend && bun run build
 
 # ============================================================================
-# Docker - Development (database only)
+# Docker - Development (backend with hot-reload)
 # ============================================================================
 
-docker: docker-up ## Alias for docker-up
+docker-dev: ## Start backend in Docker with hot-reload
+	docker-compose --profile dev up
 
-docker-up: ## Start PostgreSQL only
-	docker-compose up -d postgres
+docker-dev-build: ## Build and start dev backend
+	docker-compose --profile dev up --build
 
-docker-down: ## Stop all containers
-	docker-compose --profile production down
+docker-dev-down: ## Stop dev backend
+	docker-compose --profile dev down
 
-docker-logs: ## Show PostgreSQL logs
-	docker-compose logs -f postgres
+docker-dev-logs: ## Show dev backend logs
+	docker-compose --profile dev logs -f backend-dev
 
 docker-ps: ## Show running containers
 	docker-compose ps
@@ -107,16 +76,19 @@ prod-rebuild: ## Force rebuild and start
 
 fmt: ## Format all code
 	bun run fmt
+	cd backend && ruff format .
 
 fmt-check: ## Check formatting
 	bun run fmt:check
+	cd backend && ruff format --check .
 
-lint: ## Lint frontend (oxlint) + backend (clippy)
+lint: ## Lint frontend (oxlint) + backend (ruff)
 	bun run lint
-	cargo clippy --workspace
+	cd backend && ruff check .
 
 test: ## Run tests
 	bun run test:run
+	cd backend && pytest tests/ -v
 
 check: ## TypeScript/Svelte type check
 	bun run check
@@ -128,8 +100,9 @@ check: ## TypeScript/Svelte type check
 install: ## Install all dependencies
 	bun install
 	cd frontend && bun install
+	cd backend && pip install -e ".[dev]"
 
-setup: install db wasm ## Full setup: install deps, start db, build wasm
+setup: install ## Full setup: install deps
 	@echo "Setup complete! Run 'make dev' to start development."
 
 # ============================================================================
@@ -137,17 +110,19 @@ setup: install db wasm ## Full setup: install deps, start db, build wasm
 # ============================================================================
 
 clean: ## Clean build artifacts
-	rm -rf target
 	rm -rf frontend/.svelte-kit
 	rm -rf frontend/build
-	rm -rf frontend/src/lib/wasm/pkg
+	rm -rf backend/__pycache__
+	rm -rf backend/app/__pycache__
+	rm -rf backend/.pytest_cache
 
 clean-all: clean ## Clean everything including node_modules
 	rm -rf node_modules
 	rm -rf frontend/node_modules
+	rm -rf backend/.venv
 
 clean-docker: ## Remove Docker volumes and images
-	docker-compose --profile production down -v --rmi local
+	docker-compose --profile dev --profile production down -v --rmi local
 
 # ============================================================================
 # Help
@@ -156,20 +131,20 @@ clean-docker: ## Remove Docker volumes and images
 help: ## Show this help
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Development:"
-	@grep -E '^(dev|frontend|backend|backend-simple):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@echo "Development (Local):"
+	@grep -E '^(dev|frontend|backend):.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo ""
-	@echo "Database:"
-	@grep -E '^db[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@echo "Development (Docker):"
+	@grep -E '^docker-dev[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "Production (Docker):"
-	@grep -E '^prod[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^prod[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "Build:"
-	@grep -E '^(build|wasm)[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^build[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "Quality:"
-	@grep -E '^(fmt|lint|test|check)[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^(fmt|lint|test|check)[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
 	@echo ""
 	@echo "Other:"
-	@grep -E '^(install|setup|clean|docker)[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^(install|setup|clean)[^:]*:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'

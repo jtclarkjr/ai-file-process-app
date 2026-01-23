@@ -1,6 +1,28 @@
 services:
   # ==========================================================================
-  # AI File Processing App
+  # Development Backend (hot-reload)
+  # ==========================================================================
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: ai-file-processor-dev
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/app:/app/app:cached
+      - ./backend/tests:/app/tests:cached
+    env_file:
+      - .env
+    environment:
+      - LOG_LEVEL=DEBUG
+      - HOST=0.0.0.0
+      - PORT=8080
+    profiles:
+      - dev
+
+  # ==========================================================================
+  # Production App (full stack)
   # ==========================================================================
   app:
     build:
@@ -10,8 +32,10 @@ services:
     ports:
       - "8080:8080"
     env_file:
-      - .env  # Contains OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.
+      - .env
     environment:
-      - RUST_LOG=backend=info,tower_http=info
+      - LOG_LEVEL=INFO
       - HOST=0.0.0.0
       - PORT=8080
+    profiles:
+      - production

@@ -18,39 +18,26 @@ COPY frontend ./
 RUN bun run build
 
 # ============================================================================
-# Stage 2: Build Backend (Rust/Axum server)
+# Stage 2: Python Backend Runtime
 # ============================================================================
-FROM rust:1.83-slim-bookworm AS backend-builder
+FROM python:3.12-slim-bookworm AS runtime
 
+# Install system dependencies (libmagic for python-magic)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    pkg-config \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-
-# Copy Cargo files for dependency caching
-COPY Cargo.toml Cargo.lock ./
-COPY backend ./backend
-
-# Build release binary
-RUN cargo build --release --package backend
-
-# ============================================================================
-# Stage 3: Production Runtime
-# ============================================================================
-FROM debian:bookworm-slim AS runtime
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    libmagic1 \
     ca-certificates \
-    libssl3 \
     && rm -rf /var/lib/apt/lists/* \
     && useradd -r -s /bin/false appuser
 
 WORKDIR /app
 
-# Copy backend binary
-COPY --from=backend-builder /app/target/release/backend ./backend
+# Install Python dependencies
+COPY backend/pyproject.toml ./
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir .
+
+# Copy application code
+COPY backend/app ./app
 
 # Copy frontend build (static files served by backend)
 COPY --from=frontend-builder /app/build ./static
@@ -61,10 +48,12 @@ RUN chown -R appuser:appuser /app
 USER appuser
 
 # Environment variables
-ENV RUST_LOG=backend=info,tower_http=info
+ENV PYTHONUNBUFFERED=1
+ENV LOG_LEVEL=INFO
 ENV HOST=0.0.0.0
 ENV PORT=8080
 
 EXPOSE 8080
 
-CMD ["./backend"]
+# Run with uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
