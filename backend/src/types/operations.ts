@@ -29,11 +29,21 @@ const operationPrompts: Record<Exclude<Operation, "custom">, string> = {
 export function toPrompt(
   operation: Operation,
   customPrompt?: string | null,
+  language?: string | null,
 ): string {
+  const instruction = languageInstruction(language);
   if (operation === Operation.CUSTOM) {
-    return customPrompt ?? "Process this content.";
+    return `${customPrompt ?? "Process this content."}\n\n${instruction}`;
   }
-  return operationPrompts[operation];
+  return `${operationPrompts[operation]}\n\n${instruction}`;
+}
+
+export function languageInstruction(language?: string | null): string {
+  const normalized = language?.toLowerCase();
+  if (normalized === "ja" || normalized === "jp" || normalized === "japanese") {
+    return "Respond in Japanese.";
+  }
+  return "Respond in English.";
 }
 
 export function parseOperation(value: string): Operation {

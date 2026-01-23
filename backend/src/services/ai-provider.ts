@@ -15,6 +15,7 @@ export interface AiRequest {
   operation: string;
   customPrompt?: string | null;
   fileName?: string | null;
+  language?: string | null;
 }
 
 /**

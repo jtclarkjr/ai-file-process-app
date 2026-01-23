@@ -1,16 +1,35 @@
 <script lang="ts">
   import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte'
+  import { OPERATIONS_BY_LANG } from '$lib/constants/operations'
+  import { TRANSLATIONS } from '$lib/constants/translations'
+
+  const text = $derived(
+    TRANSLATIONS[fileProcessorStore.selectedLanguage] ?? TRANSLATIONS.en
+  )
+  const operations = $derived(
+    OPERATIONS_BY_LANG[fileProcessorStore.selectedLanguage] ??
+      OPERATIONS_BY_LANG.en
+  )
+  const operationLabel = $derived(
+    operations.find((op) => op.id === fileProcessorStore.selectedOperation)
+      ?.label ?? fileProcessorStore.selectedOperation
+  )
+  const providerLabel = $derived(
+    fileProcessorStore.currentProvider?.name || 'AI'
+  )
+  const processingDetails = $derived(
+    fileProcessorStore.selectedLanguage === 'ja'
+      ? `${providerLabel}で内容を${operationLabel}しています`
+      : `Using ${providerLabel} to ${operationLabel} your content`
+  )
 </script>
 
 {#if fileProcessorStore.processing}
   <div class="processing">
     <div class="spinner"></div>
     <div class="processing-text">
-      <p class="processing-title">Processing your file...</p>
-      <p class="processing-details">
-        Using {fileProcessorStore.currentProvider?.name || 'AI'} to {fileProcessorStore.selectedOperation}
-        your content
-      </p>
+      <p class="processing-title">{text.processingTitle}</p>
+      <p class="processing-details">{processingDetails}</p>
     </div>
   </div>
 {/if}

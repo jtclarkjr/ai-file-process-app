@@ -1,27 +1,34 @@
 <script lang="ts">
   import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte'
+  import { TRANSLATIONS } from '$lib/constants/translations'
   import { onDestroy, onMount } from 'svelte'
   import { Copy, Maximize2, X } from '@lucide/svelte'
 
   let copyTooltip = 'Copy'
   let resetTooltipTimeout: ReturnType<typeof setTimeout> | undefined
   let expanded = $state(false)
+  let hasCopied = $state(false)
+  const text = $derived(
+    TRANSLATIONS[fileProcessorStore.selectedLanguage] ?? TRANSLATIONS.en
+  )
 
-  function formatFileSize(bytes: number): string {
-    if (bytes < 1024) return `${bytes} B`
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
-  }
+  $effect(() => {
+    if (!hasCopied) {
+      copyTooltip = text.copy
+    }
+  })
 
   function copyToClipboard() {
     if (fileProcessorStore.result?.result) {
       navigator.clipboard.writeText(fileProcessorStore.result.result)
-      copyTooltip = 'Copied'
+      hasCopied = true
+      copyTooltip = text.copied
       if (resetTooltipTimeout) {
         clearTimeout(resetTooltipTimeout)
       }
       resetTooltipTimeout = setTimeout(() => {
-        copyTooltip = 'Copy'
+        hasCopied = false
+        copyTooltip = text.copy
       }, 2000)
     }
   }
@@ -61,14 +68,14 @@
 {#if fileProcessorStore.result}
   <div class="result">
     <div class="result-header">
-      <h3>Result</h3>
+      <h3>{text.result}</h3>
       <div class="result-actions">
         <button
           type="button"
           class="expand-btn"
           onclick={openExpanded}
-          aria-label="Expand result"
-          title="Expand"
+          aria-label={text.expand}
+          title={text.expand}
         >
           <span class="expand-icon" aria-hidden="true">
             <Maximize2 size={18} />
@@ -101,12 +108,12 @@
       class="overlay-backdrop"
       type="button"
       onclick={closeExpanded}
-      aria-label="Close"
+      aria-label={text.close}
     >
     </button>
     <div class="overlay-panel">
       <div class="overlay-header">
-        <h3>Result</h3>
+        <h3>{text.result}</h3>
         <div class="overlay-actions">
           <button
             type="button"
@@ -124,8 +131,8 @@
             type="button"
             class="close-btn"
             onclick={closeExpanded}
-            aria-label="Close"
-            title="Close"
+            aria-label={text.close}
+            title={text.close}
           >
             <span class="close-icon" aria-hidden="true">
               <X size={20} />

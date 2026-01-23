@@ -32,3 +32,5 @@ export interface SupportedTypeInfo {
 }
 
 export type Operation = 'summarize' | 'extract' | 'analyze' | 'classify' | 'custom';
+
+export type ResponseLanguage = 'en' | 'ja';

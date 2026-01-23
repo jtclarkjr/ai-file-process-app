@@ -31,7 +31,7 @@ export class AnthropicProvider implements AiProvider {
 
   async process(request: AiRequest): Promise<AiResponse> {
     const operation = parseOperation(request.operation);
-    const prompt = toPrompt(operation, request.customPrompt);
+    const prompt = toPrompt(operation, request.customPrompt, request.language);
 
     const content = this.buildContent(
       request.content,

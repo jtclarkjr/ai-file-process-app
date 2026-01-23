@@ -1,9 +1,13 @@
 <script lang="ts">
   import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte'
+  import { TRANSLATIONS } from '$lib/constants/translations'
   import { Play, Trash2 } from '@lucide/svelte'
 
   let dragOver = $state(false)
   let fileInput: HTMLInputElement
+  const text = $derived(
+    TRANSLATIONS[fileProcessorStore.selectedLanguage] ?? TRANSLATIONS.en
+  )
 
   function handleDragOver(e: DragEvent) {
     e.preventDefault()
@@ -68,7 +72,7 @@
       ondragleave={handleDragLeave}
       ondrop={handleDrop}
       role="region"
-      aria-label="Selected file"
+      aria-label={text.selectedFileRegion}
     >
       <div class="file-info">
         <span class="file-icon">📄</span>
@@ -85,7 +89,7 @@
           class:disabled={!fileProcessorStore.canProcess}
           role="button"
           tabindex="0"
-          aria-label="Process file"
+          aria-label={text.processFile}
           aria-disabled={!fileProcessorStore.canProcess}
           onclick={handleProcess}
           onkeydown={(e) => e.key === 'Enter' && handleProcess()}
@@ -96,9 +100,11 @@
         </span>
         <span
           class="action-icon clear-icon"
+          class:disabled={!fileProcessorStore.canProcess}
           role="button"
           tabindex="0"
-          aria-label="Remove file"
+          aria-label={text.removeFile}
+          aria-disabled={!fileProcessorStore.canProcess}
           onclick={clearFile}
           onkeydown={(e) => e.key === 'Enter' && clearFile()}
         >
@@ -122,11 +128,8 @@
     >
       <div class="drop-content">
         <span class="upload-icon">📁</span>
-        <p class="drop-text">Drag & drop a file here, or click to browse</p>
-        <p class="supported-text">
-          Supported: PDF, DOCX, TXT, MD, images (JPG, PNG, GIF, WebP), code
-          files
-        </p>
+        <p class="drop-text">{text.dropText}</p>
+        <p class="supported-text">{text.supportedText}</p>
       </div>
     </div>
   {/if}

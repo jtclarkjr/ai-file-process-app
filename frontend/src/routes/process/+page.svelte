@@ -5,7 +5,9 @@
   import ProcessingProgress from '$lib/components/ProcessingProgress.svelte'
   import ResultDisplay from '$lib/components/ResultDisplay.svelte'
   import { ChevronDown } from '@lucide/svelte'
-  import { OPERATIONS } from '$lib/constants/operations'
+  import { OPERATIONS_BY_LANG } from '$lib/constants/operations'
+  import { LANGUAGES } from '$lib/constants/languages'
+  import { TRANSLATIONS } from '$lib/constants/translations'
 
   onMount(() => {
     fileProcessorStore.bootstrap()
@@ -23,23 +25,46 @@
   let section1Open = $state(true)
   let section2Open = $state(true)
   let showPrivacyNotice = $state(true)
+
+  const text = $derived(
+    TRANSLATIONS[fileProcessorStore.selectedLanguage] ?? TRANSLATIONS.en
+  )
+  const operations = $derived(
+    OPERATIONS_BY_LANG[fileProcessorStore.selectedLanguage] ??
+      OPERATIONS_BY_LANG.en
+  )
 </script>
 
 <svelte:head>
-  <title>AI File Processing</title>
+  <title>{text.appTitle}</title>
 </svelte:head>
 
 <div class="container">
+  <div class="top-bar">
+    <div></div>
+    <div class="language-toggle">
+      <label class="sr-only" for="language">{text.language}</label>
+      <select
+        id="language"
+        bind:value={fileProcessorStore.selectedLanguage}
+        disabled={fileProcessorStore.processing}
+      >
+        {#each LANGUAGES as lang}
+          <option value={lang.id}>{lang.label}</option>
+        {/each}
+      </select>
+    </div>
+  </div>
   <header>
-    <h1>AI File Processing</h1>
-    <p class="subtitle">Upload a file and let AI analyze it for you</p>
+    <h1>{text.appTitle}</h1>
+    <p class="subtitle">{text.appSubtitle}</p>
   </header>
 
   {#if showPrivacyNotice}
     <div class="privacy-notice">
       <p>
-        <strong>Privacy First:</strong> Your files are processed in-memory only and
-        immediately discarded. No files are stored on our servers.
+        <strong>{text.privacyLabel}</strong>
+        {text.privacyBody}
       </p>
       <button
         type="button"
@@ -53,12 +78,12 @@
 
   <section class="upload-section" class:collapsed={!section1Open}>
     <div class="section-header">
-      <h2>Select a File</h2>
+      <h2>{text.selectFile}</h2>
       <button
         type="button"
         class="section-toggle"
         aria-expanded={section1Open}
-        aria-label="Toggle section 1"
+        aria-label={`${text.toggleSection} 1`}
         onclick={() => (section1Open = !section1Open)}
       >
         <span class="chevron" class:open={section1Open} aria-hidden="true">
@@ -73,12 +98,12 @@
 
   <section class="options-section" class:collapsed={!section2Open}>
     <div class="section-header">
-      <h2>Configure Processing</h2>
+      <h2>{text.configureProcessing}</h2>
       <button
         type="button"
         class="section-toggle"
         aria-expanded={section2Open}
-        aria-label="Toggle section 2"
+        aria-label={`${text.toggleSection} 2`}
         onclick={() => (section2Open = !section2Open)}
       >
         <span class="chevron" class:open={section2Open} aria-hidden="true">
@@ -90,7 +115,7 @@
     {#if section2Open}
       <div class="options-grid">
         <div class="option-group">
-          <label for="provider">AI Provider</label>
+          <label for="provider">{text.aiProvider}</label>
           <select
             id="provider"
             bind:value={fileProcessorStore.selectedProvider}
@@ -99,23 +124,23 @@
             {#each fileProcessorStore.providers as provider}
               <option value={provider.id} disabled={!provider.available}>
                 {provider.name}
-                {#if !provider.available}(Not configured){/if}
+                {#if !provider.available}({text.notConfigured}){/if}
               </option>
             {/each}
           </select>
           {#if fileProcessorStore.currentProvider?.supports_vision}
-            <span class="vision-badge">Supports Images</span>
+            <span class="vision-badge">{text.supportsImages}</span>
           {/if}
         </div>
 
         <div class="option-group">
-          <label for="operation">Operation</label>
+          <label for="operation">{text.operation}</label>
           <select
             id="operation"
             bind:value={fileProcessorStore.selectedOperation}
             disabled={fileProcessorStore.processing}
           >
-            {#each OPERATIONS as op}
+            {#each operations as op}
               <option value={op.id}>{op.label} - {op.description}</option>
             {/each}
           </select>
@@ -124,11 +149,11 @@
 
       {#if fileProcessorStore.selectedOperation === 'custom'}
         <div class="custom-prompt">
-          <label for="customPrompt">Custom Prompt</label>
+          <label for="customPrompt">{text.customPromptLabel}</label>
           <textarea
             id="customPrompt"
             bind:value={fileProcessorStore.customPrompt}
-            placeholder="Enter your custom instructions for processing this file..."
+            placeholder={text.customPromptPlaceholder}
             rows="3"
             disabled={fileProcessorStore.processing}
           ></textarea>
@@ -148,6 +173,34 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+  }
+
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .language-toggle select {
+    padding: 6px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background: white;
+    color: #374151;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
   }
 
   .section-header {

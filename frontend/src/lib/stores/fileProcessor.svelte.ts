@@ -3,6 +3,7 @@ import type {
   ProcessResponse,
   ProcessResult,
   ProviderInfo,
+  ResponseLanguage,
   SupportedTypeInfo,
 } from '$lib/types/fileProcessor';
 
@@ -13,6 +14,7 @@ class FileProcessorStore {
   supportedTypes = $state<SupportedTypeInfo[]>([]);
   selectedProvider = $state<string>('openai');
   selectedOperation = $state<Operation>('summarize');
+  selectedLanguage = $state<ResponseLanguage>('en');
   customPrompt = $state<string>('');
   selectedFile = $state<File | null>(null);
   processing = $state(false);
@@ -92,6 +94,10 @@ class FileProcessorStore {
     this.customPrompt = prompt;
   }
 
+  setLanguage(language: ResponseLanguage) {
+    this.selectedLanguage = language;
+  }
+
   get acceptedExtensions(): string {
     return this.supportedTypes
       .flatMap((t) => t.extensions)
@@ -136,6 +142,7 @@ class FileProcessorStore {
       const params = new URLSearchParams({
         provider: this.selectedProvider,
         operation: this.selectedOperation,
+        language: this.selectedLanguage,
       });
 
       if (this.selectedOperation === 'custom' && this.customPrompt) {

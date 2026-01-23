@@ -42,6 +42,7 @@ files.post("/process", async (c) => {
     const provider = url.searchParams.get("provider");
     const operation = url.searchParams.get("operation");
     const customPrompt = url.searchParams.get("custom_prompt");
+    const language = url.searchParams.get("language");
 
     if (!provider || !operation) {
       return c.json(
@@ -116,6 +117,7 @@ files.post("/process", async (c) => {
       operation,
       customPrompt,
       fileName,
+      language,
     });
 
     const processingTimeMs = Math.round(performance.now() - startTime);
