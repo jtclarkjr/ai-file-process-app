@@ -1,18 +1,11 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fileProcessorStore, type Operation } from '$lib/stores/fileProcessor.svelte';
+	import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte';
 	import FileUpload from '$lib/components/FileUpload.svelte';
 	import ProcessingProgress from '$lib/components/ProcessingProgress.svelte';
 	import ResultDisplay from '$lib/components/ResultDisplay.svelte';
 	import { ChevronDown } from '@lucide/svelte';
-
-	const operations: { id: Operation; label: string; description: string }[] = [
-		{ id: 'summarize', label: 'Summarize', description: 'Get a concise summary' },
-		{ id: 'extract', label: 'Extract', description: 'Extract key information' },
-		{ id: 'analyze', label: 'Analyze', description: 'In-depth analysis' },
-		{ id: 'classify', label: 'Classify', description: 'Categorize the content' },
-		{ id: 'custom', label: 'Custom', description: 'Use your own prompt' },
-	];
+	import { OPERATIONS } from '$lib/constants/operations';
 
 	onMount(() => {
 		fileProcessorStore.bootstrap();
@@ -118,7 +111,7 @@
 						bind:value={fileProcessorStore.selectedOperation}
 						disabled={fileProcessorStore.processing}
 					>
-						{#each operations as op}
+					{#each OPERATIONS as op}
 							<option value={op.id}>{op.label} - {op.description}</option>
 						{/each}
 					</select>
@@ -230,10 +223,6 @@
 		border-radius: 8px;
 		margin-bottom: 30px;
 		position: relative;
-	}
-
-	.privacy-icon {
-		font-size: 1.25rem;
 	}
 
 	.privacy-notice p {
