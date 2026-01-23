@@ -44,7 +44,6 @@
 
 	{#if showPrivacyNotice}
 		<div class="privacy-notice">
-			<span class="privacy-icon">🔒</span>
 			<p>
 				<strong>Privacy First:</strong> Your files are processed in-memory only and immediately
 				discarded. No files are stored on our servers.

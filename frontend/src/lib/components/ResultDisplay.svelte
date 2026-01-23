@@ -34,7 +34,6 @@
 
 {#if fileProcessorStore.error}
 	<div class="error">
-		<span class="error-icon">⚠️</span>
 		<p>{fileProcessorStore.error}</p>
 	</div>
 {/if}
