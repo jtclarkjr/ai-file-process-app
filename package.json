@@ -1,0 +1,29 @@
+{
+  "name": "ai-file-process-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently \"bun run dev:backend\" \"bun run dev:frontend\"",
+    "dev:frontend": "cd frontend && bun run dev",
+    "dev:backend": "cd backend && cargo run",
+    "build": "bun run wasm:build && bun run build:frontend && bun run build:backend",
+    "build:frontend": "cd frontend && bun run build",
+    "build:backend": "cd backend && cargo build --release",
+    "wasm:build": "cd wasm && wasm-pack build --target web --out-dir ../frontend/src/lib/wasm/pkg",
+    "lint": "cd frontend && bun run lint",
+    "lint:rust": "cargo clippy --workspace",
+    "test": "cd frontend && bun run test:run",
+    "test:watch": "cd frontend && bun run test",
+    "check": "cd frontend && bun run check",
+    "db:up": "docker-compose up -d",
+    "db:down": "docker-compose down",
+    "fmt": "dprint fmt && prettier --write \"**/*.svelte\" --ignore-path .gitignore",
+    "fmt:check": "dprint check && prettier --check \"**/*.svelte\" --ignore-path .gitignore"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "dprint": "^0.49.0",
+    "prettier": "^3.0.0",
+    "prettier-plugin-svelte": "^3.0.0"
+  }
+}

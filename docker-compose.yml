@@ -1,0 +1,17 @@
+services:
+  # ==========================================================================
+  # AI File Processing App
+  # ==========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-file-processor
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env  # Contains OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.
+    environment:
+      - RUST_LOG=backend=info,tower_http=info
+      - HOST=0.0.0.0
+      - PORT=8080

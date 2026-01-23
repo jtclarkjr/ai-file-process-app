@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build artifacts
+target/
+frontend/.svelte-kit/
+frontend/build/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Misc
+*.md
+*.log
+Makefile
+.husky/
+dprint.json
+.prettierrc
