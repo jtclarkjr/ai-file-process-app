@@ -1,6 +1,6 @@
 services:
   # ==========================================================================
-  # Development Backend (hot-reload)
+  # Development Backend (Bun/Hono with hot-reload)
   # ==========================================================================
   backend-dev:
     build:
@@ -10,12 +10,13 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./backend/app:/app/app:cached
-      - ./backend/tests:/app/tests:cached
+      - ./backend/src:/app/src:cached
+      - ./backend/package.json:/app/package.json:cached
+      - ./backend/tsconfig.json:/app/tsconfig.json:cached
     env_file:
       - .env
     environment:
-      - LOG_LEVEL=DEBUG
+      - LOG_LEVEL=debug
       - HOST=0.0.0.0
       - PORT=8080
     stdin_open: true

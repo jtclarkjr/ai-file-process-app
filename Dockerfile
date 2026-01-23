@@ -18,42 +18,40 @@ COPY frontend ./
 RUN bun run build
 
 # ============================================================================
-# Stage 2: Python Backend Runtime
+# Stage 2: Build Backend (install dependencies)
 # ============================================================================
-FROM python:3.12-slim-bookworm AS runtime
-
-# Install system dependencies (libmagic for python-magic)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libmagic1 \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/* \
-    && useradd -r -s /bin/false appuser
+FROM oven/bun:1 AS backend-builder
 
 WORKDIR /app
 
-# Install Python dependencies
-COPY backend/pyproject.toml ./
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir .
+# Copy package files
+COPY backend/package.json backend/bun.lock* ./
 
-# Copy application code
-COPY backend/app ./app
+# Install dependencies
+RUN bun install --frozen-lockfile --production
+
+# ============================================================================
+# Stage 3: Production Runtime
+# ============================================================================
+FROM oven/bun:1-slim AS runtime
+
+WORKDIR /app
+
+# Copy backend dependencies and source
+COPY --from=backend-builder /app/node_modules ./node_modules
+COPY backend/package.json ./
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
 
 # Copy frontend build (static files served by backend)
 COPY --from=frontend-builder /app/build ./static
 
-# Set ownership
-RUN chown -R appuser:appuser /app
-
-USER appuser
-
 # Environment variables
-ENV PYTHONUNBUFFERED=1
-ENV LOG_LEVEL=INFO
+ENV LOG_LEVEL=info
 ENV HOST=0.0.0.0
 ENV PORT=8080
 
 EXPOSE 8080
 
-# Run with uvicorn
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Run with Bun
+CMD ["bun", "run", "start"]

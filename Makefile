@@ -16,8 +16,8 @@ dev: ## Run frontend + backend locally
 frontend: ## Run frontend only
 	bun run dev:frontend
 
-backend: ## Run backend only (uvicorn with hot reload)
-	cd backend && uvicorn app.main:app --reload --host 0.0.0.0 --port 8080
+backend: ## Run backend only (Bun with hot reload)
+	cd backend && bun run dev
 
 # ============================================================================
 # Build
@@ -82,19 +82,18 @@ prod-rebuild: ## Force rebuild and start
 
 fmt: ## Format all code
 	bun run fmt
-	cd backend && ruff format .
+	cd backend && bun run format
 
 fmt-check: ## Check formatting
 	bun run fmt:check
-	cd backend && ruff format --check .
 
-lint: ## Lint frontend (oxlint) + backend (ruff)
+lint: ## Lint frontend (oxlint) + backend (biome)
 	bun run lint
-	cd backend && ruff check .
+	cd backend && bun run lint
 
 test: ## Run tests
 	bun run test:run
-	cd backend && pytest tests/ -v
+	cd backend && bun test
 
 check: ## TypeScript/Svelte type check
 	bun run check
@@ -106,7 +105,7 @@ check: ## TypeScript/Svelte type check
 install: ## Install all dependencies
 	bun install
 	cd frontend && bun install
-	cd backend && pip install -e ".[dev]"
+	cd backend && bun install
 
 setup: install ## Full setup: install deps
 	@echo "Setup complete! Run 'make dev' to start development."
@@ -118,14 +117,11 @@ setup: install ## Full setup: install deps
 clean: ## Clean build artifacts
 	rm -rf frontend/.svelte-kit
 	rm -rf frontend/build
-	rm -rf backend/__pycache__
-	rm -rf backend/app/__pycache__
-	rm -rf backend/.pytest_cache
 
 clean-all: clean ## Clean everything including node_modules
 	rm -rf node_modules
 	rm -rf frontend/node_modules
-	rm -rf backend/.venv
+	rm -rf backend/node_modules
 
 clean-docker: ## Remove Docker volumes and images
 	docker-compose --profile dev --profile production down -v --rmi local
