@@ -1,18 +1,15 @@
 use async_trait::async_trait;
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-use super::{AiProvider, AiRequest, AiResponse, FileContent, TokenUsage};
+use super::AiProvider;
 use crate::errors::AppError;
-
-pub struct AnthropicProvider {
-    client: Client,
-    api_key: String,
-    model: String,
-    timeout: Duration,
-}
+use crate::models::anthropic::{
+    AnthropicProvider, ContentBlock, ErrorResponse, ImageSource, Message, MessagesRequest,
+    MessagesResponse,
+};
+use crate::models::{AiRequest, AiResponse, FileContent, TokenUsage};
 
 impl AnthropicProvider {
     pub fn new(api_key: String, model: String, timeout_secs: u64) -> Self {
@@ -28,66 +25,6 @@ impl AnthropicProvider {
             timeout: Duration::from_secs(timeout_secs),
         }
     }
-}
-
-#[derive(Serialize)]
-struct MessagesRequest {
-    model: String,
-    max_tokens: u32,
-    messages: Vec<Message>,
-}
-
-#[derive(Serialize)]
-struct Message {
-    role: String,
-    content: Vec<ContentBlock>,
-}
-
-#[derive(Serialize)]
-#[serde(tag = "type")]
-enum ContentBlock {
-    #[serde(rename = "text")]
-    Text { text: String },
-    #[serde(rename = "image")]
-    Image { source: ImageSource },
-}
-
-#[derive(Serialize)]
-struct ImageSource {
-    #[serde(rename = "type")]
-    source_type: String,
-    media_type: String,
-    data: String,
-}
-
-#[derive(Deserialize)]
-struct MessagesResponse {
-    content: Vec<ResponseContent>,
-    model: String,
-    usage: Usage,
-}
-
-#[derive(Deserialize)]
-struct ResponseContent {
-    #[serde(rename = "type")]
-    content_type: String,
-    text: Option<String>,
-}
-
-#[derive(Deserialize)]
-struct Usage {
-    input_tokens: u32,
-    output_tokens: u32,
-}
-
-#[derive(Deserialize)]
-struct ErrorResponse {
-    error: ApiError,
-}
-
-#[derive(Deserialize)]
-struct ApiError {
-    message: String,
 }
 
 #[async_trait]

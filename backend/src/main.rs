@@ -1,5 +1,5 @@
-mod config;
 mod errors;
+mod models;
 mod routes;
 mod services;
 
@@ -15,8 +15,7 @@ use tower_http::{
 use tracing_subscriber::fmt::time::UtcTime;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use config::Config;
-use routes::FileProcessingState;
+use models::{Config, FileProcessingState};
 use services::{AnthropicProvider, FileExtractor, OpenAiProvider};
 
 #[tokio::main]

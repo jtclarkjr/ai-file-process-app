@@ -1,18 +1,15 @@
 use async_trait::async_trait;
 use base64::{engine::general_purpose::STANDARD as BASE64, Engine};
 use reqwest::Client;
-use serde::{Deserialize, Serialize};
 use std::time::Duration;
 
-use super::{AiProvider, AiRequest, AiResponse, FileContent, TokenUsage};
+use super::AiProvider;
 use crate::errors::AppError;
-
-pub struct OpenAiProvider {
-    client: Client,
-    api_key: String,
-    model: String,
-    timeout: Duration,
-}
+use crate::models::openai::{
+    ChatRequest, ChatResponse, ContentPart, ErrorResponse, ImageUrl, Message, MessageContent,
+    OpenAiProvider,
+};
+use crate::models::{AiRequest, AiResponse, FileContent, TokenUsage};
 
 impl OpenAiProvider {
     pub fn new(api_key: String, model: String, timeout_secs: u64) -> Self {
@@ -28,76 +25,6 @@ impl OpenAiProvider {
             timeout: Duration::from_secs(timeout_secs),
         }
     }
-}
-
-#[derive(Serialize)]
-struct ChatRequest {
-    model: String,
-    messages: Vec<Message>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    max_tokens: Option<u32>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    max_completion_tokens: Option<u32>,
-}
-
-#[derive(Serialize)]
-struct Message {
-    role: String,
-    content: MessageContent,
-}
-
-#[derive(Serialize)]
-#[serde(untagged)]
-enum MessageContent {
-    Text(String),
-    Parts(Vec<ContentPart>),
-}
-
-#[derive(Serialize)]
-#[serde(tag = "type")]
-enum ContentPart {
-    #[serde(rename = "text")]
-    Text { text: String },
-    #[serde(rename = "image_url")]
-    ImageUrl { image_url: ImageUrl },
-}
-
-#[derive(Serialize)]
-struct ImageUrl {
-    url: String,
-}
-
-#[derive(Deserialize)]
-struct ChatResponse {
-    choices: Vec<Choice>,
-    model: String,
-    usage: Option<Usage>,
-}
-
-#[derive(Deserialize)]
-struct Choice {
-    message: ResponseMessage,
-}
-
-#[derive(Deserialize)]
-struct ResponseMessage {
-    content: String,
-}
-
-#[derive(Deserialize)]
-struct Usage {
-    prompt_tokens: u32,
-    completion_tokens: u32,
-}
-
-#[derive(Deserialize)]
-struct ErrorResponse {
-    error: ApiError,
-}
-
-#[derive(Deserialize)]
-struct ApiError {
-    message: String,
 }
 
 #[async_trait]

@@ -3,7 +3,7 @@ mod anthropic;
 mod file_extractor;
 mod openai;
 
-pub use ai_provider::{AiProvider, AiRequest, AiResponse, FileContent, Operation, TokenUsage};
-pub use anthropic::AnthropicProvider;
-pub use file_extractor::{FileExtractor, SupportedFileType};
-pub use openai::OpenAiProvider;
+pub use crate::models::FileExtractor;
+pub use crate::models::{AiRequest, AiResponse, Operation};
+pub use crate::models::{AnthropicProvider, OpenAiProvider};
+pub use ai_provider::AiProvider;

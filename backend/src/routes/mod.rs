@@ -3,7 +3,8 @@ pub mod file_processing;
 use axum::{routing::get, Router};
 use std::sync::Arc;
 
-pub use file_processing::{file_routes, FileProcessingState};
+use crate::models::FileProcessingState;
+pub use file_processing::file_routes;
 
 pub fn api_routes(state: Arc<FileProcessingState>) -> Router {
     Router::new()
