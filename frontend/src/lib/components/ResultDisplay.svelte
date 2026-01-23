@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { Copy, Maximize2, X } from '@lucide/svelte';
 
 	let copyTooltip = 'Copy';
@@ -30,6 +30,17 @@
 		if (resetTooltipTimeout) {
 			clearTimeout(resetTooltipTimeout);
 		}
+	});
+
+	function handleKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && expanded) {
+			closeExpanded();
+		}
+	}
+
+	onMount(() => {
+		window.addEventListener('keydown', handleKeydown);
+		return () => window.removeEventListener('keydown', handleKeydown);
 	});
 
 	function openExpanded() {
