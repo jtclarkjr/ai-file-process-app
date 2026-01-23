@@ -22,6 +22,9 @@
 		const files = e.dataTransfer?.files;
 		if (files && files.length > 0) {
 			fileProcessorStore.setFile(files[0]);
+			if (fileInput) {
+				fileInput.value = '';
+			}
 		}
 	}
 
@@ -65,7 +68,13 @@
 
 <div class="file-upload">
 	{#if fileProcessorStore.selectedFile}
-		<div class="selected-file">
+		<div
+			class="selected-file"
+			class:drag-over={dragOver}
+			ondragover={handleDragOver}
+			ondragleave={handleDragLeave}
+			ondrop={handleDrop}
+		>
 			<div class="file-info">
 				<span class="file-icon">📄</span>
 				<div class="file-details">
@@ -201,6 +210,11 @@
 		background: #f0fdf4;
 		border: 1px solid #22c55e;
 		border-radius: 8px;
+	}
+
+	.selected-file.drag-over {
+		border-color: #2563eb;
+		background: #eff6ff;
 	}
 
 	.file-info {
