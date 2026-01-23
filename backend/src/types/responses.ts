@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { SupportedFileType } from "./file-types";
+import { z } from 'zod';
+import { SupportedFileType } from './file-types';
 
 /**
  * Response schemas and types

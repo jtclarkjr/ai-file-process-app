@@ -1,17 +1,12 @@
-import OpenAI from "openai";
-import { parseOperation, toPrompt } from "../types";
-import type {
-  AiProvider,
-  AiRequest,
-  AiResponse,
-  FileContent,
-} from "./ai-provider";
+import OpenAI from 'openai';
+import { parseOperation, toPrompt } from '../types';
+import type { AiProvider, AiRequest, AiResponse, FileContent } from './ai-provider';
 
 /**
  * OpenAI provider implementation
  */
 export class OpenAiProvider implements AiProvider {
-  readonly name = "openai";
+  readonly name = 'openai';
   private client: OpenAI;
   private model: string;
 
@@ -25,19 +20,19 @@ export class OpenAiProvider implements AiProvider {
 
   get supportsVision(): boolean {
     return (
-      this.model.includes("vision") ||
-      this.model.includes("gpt-4-turbo") ||
-      this.model.includes("gpt-4o") ||
-      this.model.includes("gpt-5")
+      this.model.includes('vision')
+      || this.model.includes('gpt-4-turbo')
+      || this.model.includes('gpt-4o')
+      || this.model.includes('gpt-5')
     );
   }
 
   private get usesMaxCompletionTokens(): boolean {
     // GPT-5+ models use max_completion_tokens instead of max_tokens
     return (
-      this.model.includes("gpt-5") ||
-      this.model.includes("o1") ||
-      this.model.includes("o3")
+      this.model.includes('gpt-5')
+      || this.model.includes('o1')
+      || this.model.includes('o3')
     );
   }
 
@@ -65,16 +60,16 @@ export class OpenAiProvider implements AiProvider {
 
     const response = await this.client.chat.completions.create(params);
 
-    const result = response.choices[0]?.message?.content ?? "";
+    const result = response.choices[0]?.message?.content ?? '';
 
     return {
       result,
       model: response.model,
       usage: response.usage
         ? {
-            inputTokens: response.usage.prompt_tokens,
-            outputTokens: response.usage.completion_tokens,
-          }
+          inputTokens: response.usage.prompt_tokens,
+          outputTokens: response.usage.completion_tokens,
+        }
         : null,
     };
   }
@@ -84,14 +79,14 @@ export class OpenAiProvider implements AiProvider {
     prompt: string,
     fileName?: string | null,
   ): OpenAI.ChatCompletionMessageParam[] {
-    if (content.type === "text") {
+    if (content.type === 'text') {
       let fullPrompt = `${prompt}\n\n`;
       if (fileName) {
         fullPrompt += `File: ${fileName}\n\n`;
       }
       fullPrompt += content.text;
 
-      return [{ role: "user", content: fullPrompt }];
+      return [{ role: 'user', content: fullPrompt }];
     }
 
     // Image content
@@ -101,7 +96,7 @@ export class OpenAiProvider implements AiProvider {
       );
     }
 
-    const base64Data = Buffer.from(content.data).toString("base64");
+    const base64Data = Buffer.from(content.data).toString('base64');
     const dataUrl = `data:${content.mediaType};base64,${base64Data}`;
 
     let textPart = prompt;
@@ -111,10 +106,10 @@ export class OpenAiProvider implements AiProvider {
 
     return [
       {
-        role: "user",
+        role: 'user',
         content: [
-          { type: "text", text: textPart },
-          { type: "image_url", image_url: { url: dataUrl } },
+          { type: 'text', text: textPart },
+          { type: 'image_url', image_url: { url: dataUrl } },
         ],
       },
     ];

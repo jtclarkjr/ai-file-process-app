@@ -1,12 +1,12 @@
-import { Hono } from "hono";
-import type { AiProvider, FileExtractor } from "../services";
+import { Hono } from 'hono';
+import type { AiProvider, FileExtractor } from '../services';
 import {
   DecompressionBombError,
   FileExtractionError,
   FileTooLargeError,
   MimeTypeMismatchError,
   UnsupportedFileTypeError,
-} from "../services";
+} from '../services';
 import {
   errorResponse,
   getAllSupported,
@@ -14,7 +14,7 @@ import {
   type ProcessResponse,
   type ProvidersResponse,
   type SupportedTypesResponse,
-} from "../types";
+} from '../types';
 
 interface FilesContext {
   Variables: {
@@ -29,34 +29,34 @@ const files = new Hono<FilesContext>();
 /**
  * POST /files/process - Process a file with AI
  */
-files.post("/process", async (c) => {
+files.post('/process', async (c) => {
   const startTime = performance.now();
 
   try {
-    const openai = c.get("openaiProvider");
-    const anthropic = c.get("anthropicProvider");
-    const extractor = c.get("fileExtractor");
+    const openai = c.get('openaiProvider');
+    const anthropic = c.get('anthropicProvider');
+    const extractor = c.get('fileExtractor');
 
     // Parse query params
     const url = new URL(c.req.url);
-    const provider = url.searchParams.get("provider");
-    const operation = url.searchParams.get("operation");
-    const customPrompt = url.searchParams.get("custom_prompt");
-    const language = url.searchParams.get("language");
+    const provider = url.searchParams.get('provider');
+    const operation = url.searchParams.get('operation');
+    const customPrompt = url.searchParams.get('custom_prompt');
+    const language = url.searchParams.get('language');
 
     if (!provider || !operation) {
       return c.json(
-        errorResponse("Missing required query params: provider, operation"),
+        errorResponse('Missing required query params: provider, operation'),
         400,
       );
     }
 
     // Get the file from form data
     const formData = await c.req.formData();
-    const file = formData.get("file");
+    const file = formData.get('file');
 
     if (!file || !(file instanceof File)) {
-      return c.json(errorResponse("No file provided"), 400);
+      return c.json(errorResponse('No file provided'), 400);
     }
 
     const fileData = new Uint8Array(await file.arrayBuffer());
@@ -76,14 +76,14 @@ files.post("/process", async (c) => {
 
     // Get the appropriate provider
     let aiProvider: AiProvider;
-    if (provider.toLowerCase() === "openai") {
+    if (provider.toLowerCase() === 'openai') {
       if (!openai) {
-        return c.json(errorResponse("OpenAI provider not configured"), 503);
+        return c.json(errorResponse('OpenAI provider not configured'), 503);
       }
       aiProvider = openai;
-    } else if (provider.toLowerCase() === "anthropic") {
+    } else if (provider.toLowerCase() === 'anthropic') {
       if (!anthropic) {
-        return c.json(errorResponse("Anthropic provider not configured"), 503);
+        return c.json(errorResponse('Anthropic provider not configured'), 503);
       }
       aiProvider = anthropic;
     } else {
@@ -137,7 +137,7 @@ files.post("/process", async (c) => {
 
     return c.json(response);
   } catch (error) {
-    console.error("Error processing file:", error);
+    console.error('Error processing file:', error);
 
     if (error instanceof FileTooLargeError) {
       return c.json(errorResponse(error.message), 413);
@@ -155,8 +155,7 @@ files.post("/process", async (c) => {
       return c.json(errorResponse(error.message), 422);
     }
 
-    const message =
-      error instanceof Error ? error.message : "Internal server error";
+    const message = error instanceof Error ? error.message : 'Internal server error';
     return c.json(errorResponse(message), 500);
   }
 });
@@ -164,7 +163,7 @@ files.post("/process", async (c) => {
 /**
  * GET /files/supported-types - List supported file types
  */
-files.get("/supported-types", (c) => {
+files.get('/supported-types', (c) => {
   const supported = getAllSupported();
 
   const response: SupportedTypesResponse = {
@@ -178,22 +177,22 @@ files.get("/supported-types", (c) => {
 /**
  * GET /files/providers - List available AI providers
  */
-files.get("/providers", (c) => {
-  const openai = c.get("openaiProvider");
-  const anthropic = c.get("anthropicProvider");
+files.get('/providers', (c) => {
+  const openai = c.get('openaiProvider');
+  const anthropic = c.get('anthropicProvider');
 
   const response: ProvidersResponse = {
     success: true,
     data: [
       {
-        id: "openai",
-        name: "OpenAI",
+        id: 'openai',
+        name: 'OpenAI',
         available: openai !== null,
         supportsVision: openai?.supportsVision ?? false,
       },
       {
-        id: "anthropic",
-        name: "Anthropic",
+        id: 'anthropic',
+        name: 'Anthropic',
         available: anthropic !== null,
         supportsVision: anthropic?.supportsVision ?? false,
       },

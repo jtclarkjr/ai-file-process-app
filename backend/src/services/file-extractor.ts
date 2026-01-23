@@ -1,15 +1,9 @@
-import { fileTypeFromBuffer } from "file-type";
-import mammoth from "mammoth";
-import pdf from "pdf-parse";
-import { config } from "../config";
-import {
-  fromExtension,
-  fromMime,
-  isImage,
-  SupportedFileType,
-  toMime,
-} from "../types";
-import type { FileContent } from "./ai-provider";
+import { fileTypeFromBuffer } from 'file-type';
+import mammoth from 'mammoth';
+import pdf from 'pdf-parse';
+import { config } from '../config';
+import { fromExtension, fromMime, isImage, SupportedFileType, toMime } from '../types';
+import type { FileContent } from './ai-provider';
 
 /**
  * Custom error classes
@@ -17,21 +11,21 @@ import type { FileContent } from "./ai-provider";
 export class FileTooLargeError extends Error {
   constructor(size: number, maxSize: number) {
     super(`File too large: ${size} bytes exceeds maximum of ${maxSize} bytes`);
-    this.name = "FileTooLargeError";
+    this.name = 'FileTooLargeError';
   }
 }
 
 export class UnsupportedFileTypeError extends Error {
   constructor(fileType: string) {
     super(`Unsupported file type: ${fileType}`);
-    this.name = "UnsupportedFileTypeError";
+    this.name = 'UnsupportedFileTypeError';
   }
 }
 
 export class MimeTypeMismatchError extends Error {
   constructor(declared: string, detected: string) {
     super(`MIME type mismatch: declared ${declared}, detected ${detected}`);
-    this.name = "MimeTypeMismatchError";
+    this.name = 'MimeTypeMismatchError';
   }
 }
 
@@ -40,14 +34,14 @@ export class DecompressionBombError extends Error {
     super(
       `Decompression bomb detected: ratio ${ratio}:1 exceeds maximum of ${maxRatio}:1`,
     );
-    this.name = "DecompressionBombError";
+    this.name = 'DecompressionBombError';
   }
 }
 
 export class FileExtractionError extends Error {
   constructor(message: string) {
     super(`File extraction failed: ${message}`);
-    this.name = "FileExtractionError";
+    this.name = 'FileExtractionError';
   }
 }
 
@@ -77,7 +71,7 @@ export class FileExtractor {
 
     // If not detected from magic bytes, try extension
     if (!fileType && fileName) {
-      const ext = fileName.split(".").pop();
+      const ext = fileName.split('.').pop();
       if (ext) {
         fileType = fromExtension(ext);
       }
@@ -90,7 +84,7 @@ export class FileExtractor {
 
     if (!fileType) {
       throw new UnsupportedFileTypeError(
-        detectedMime ?? declaredMime ?? "unknown",
+        detectedMime ?? declaredMime ?? 'unknown',
       );
     }
 
@@ -135,7 +129,7 @@ export class FileExtractor {
       default:
         if (isImage(fileType)) {
           content = {
-            type: "image",
+            type: 'image',
             data,
             mediaType: toMime(fileType),
           };
@@ -145,7 +139,7 @@ export class FileExtractor {
     }
 
     // Check for decompression bomb (text content much larger than original)
-    if (content.type === "text") {
+    if (content.type === 'text') {
       const textBytes = new TextEncoder().encode(content.text).length;
       const ratio = Math.floor(textBytes / Math.max(originalSize, 1));
 
@@ -168,11 +162,11 @@ export class FileExtractor {
 
       if (!result.text.trim()) {
         throw new FileExtractionError(
-          "PDF contains no extractable text (may be image-based)",
+          'PDF contains no extractable text (may be image-based)',
         );
       }
 
-      return { type: "text", text: result.text };
+      return { type: 'text', text: result.text };
     } catch (error) {
       if (error instanceof FileExtractionError) throw error;
       throw new FileExtractionError(
@@ -187,10 +181,10 @@ export class FileExtractor {
       const result = await mammoth.extractRawText({ buffer });
 
       if (!result.value.trim()) {
-        throw new FileExtractionError("DOCX contains no extractable text");
+        throw new FileExtractionError('DOCX contains no extractable text');
       }
 
-      return { type: "text", text: result.value };
+      return { type: 'text', text: result.value };
     } catch (error) {
       if (error instanceof FileExtractionError) throw error;
       throw new FileExtractionError(
@@ -201,10 +195,10 @@ export class FileExtractor {
 
   private extractText(data: Uint8Array): FileContent {
     try {
-      const text = new TextDecoder("utf-8", { fatal: true }).decode(data);
-      return { type: "text", text };
+      const text = new TextDecoder('utf-8', { fatal: true }).decode(data);
+      return { type: 'text', text };
     } catch {
-      throw new FileExtractionError("Invalid UTF-8 in text file");
+      throw new FileExtractionError('Invalid UTF-8 in text file');
     }
   }
 }

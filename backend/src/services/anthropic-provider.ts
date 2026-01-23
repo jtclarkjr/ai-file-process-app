@@ -1,19 +1,14 @@
-import Anthropic from "@anthropic-ai/sdk";
-import { parseOperation, toPrompt } from "../types";
-import type {
-  AiProvider,
-  AiRequest,
-  AiResponse,
-  FileContent,
-} from "./ai-provider";
+import Anthropic from '@anthropic-ai/sdk';
+import { parseOperation, toPrompt } from '../types';
+import type { AiProvider, AiRequest, AiResponse, FileContent } from './ai-provider';
 
-type ImageMediaType = "image/jpeg" | "image/png" | "image/gif" | "image/webp";
+type ImageMediaType = 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp';
 
 /**
  * Anthropic provider implementation
  */
 export class AnthropicProvider implements AiProvider {
-  readonly name = "anthropic";
+  readonly name = 'anthropic';
   private client: Anthropic;
   private model: string;
 
@@ -26,7 +21,7 @@ export class AnthropicProvider implements AiProvider {
   }
 
   get supportsVision(): boolean {
-    return this.model.includes("claude-3");
+    return this.model.includes('claude-3');
   }
 
   async process(request: AiRequest): Promise<AiResponse> {
@@ -42,17 +37,17 @@ export class AnthropicProvider implements AiProvider {
     const response = await this.client.messages.create({
       model: this.model,
       max_tokens: 4096,
-      messages: [{ role: "user", content }],
+      messages: [{ role: 'user', content }],
     });
 
     // Extract text from response
     const result = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === "text")
+      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
       .map((block) => block.text)
-      .join("\n");
+      .join('\n');
 
     if (!result) {
-      throw new Error("No text response from Anthropic");
+      throw new Error('No text response from Anthropic');
     }
 
     return {
@@ -69,15 +64,15 @@ export class AnthropicProvider implements AiProvider {
     content: FileContent,
     prompt: string,
     fileName?: string | null,
-  ): Anthropic.MessageParam["content"] {
-    if (content.type === "text") {
+  ): Anthropic.MessageParam['content'] {
+    if (content.type === 'text') {
       let fullText = `${prompt}\n\n`;
       if (fileName) {
         fullText += `File: ${fileName}\n\n`;
       }
       fullText += content.text;
 
-      return [{ type: "text", text: fullText }];
+      return [{ type: 'text', text: fullText }];
     }
 
     // Image content
@@ -87,7 +82,7 @@ export class AnthropicProvider implements AiProvider {
       );
     }
 
-    const base64Data = Buffer.from(content.data).toString("base64");
+    const base64Data = Buffer.from(content.data).toString('base64');
 
     let textPart = prompt;
     if (fileName) {
@@ -95,11 +90,11 @@ export class AnthropicProvider implements AiProvider {
     }
 
     return [
-      { type: "text", text: textPart },
+      { type: 'text', text: textPart },
       {
-        type: "image",
+        type: 'image',
         source: {
-          type: "base64",
+          type: 'base64',
           media_type: content.mediaType as ImageMediaType,
           data: base64Data,
         },

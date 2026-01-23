@@ -2,7 +2,7 @@ import type { Operation, ResponseLanguage } from '$lib/types/fileProcessor';
 
 export const OPERATIONS_BY_LANG: Record<
   ResponseLanguage,
-  { id: Operation; label: string; description: string; }[]
+  { id: Operation; label: string; description: string }[]
 > = {
   en: [
     { id: 'summarize', label: 'Summarize', description: 'Get a concise summary' },

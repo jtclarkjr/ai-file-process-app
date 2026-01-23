@@ -26,7 +26,7 @@
     "https://plugins.dprint.dev/toml-0.6.4.wasm"
   ],
   "typescript": {
-    "semiColons": "always",
+    "semiColons": "prefer",
     "quoteStyle": "preferSingle",
     "trailingCommas": "onlyMultiLine"
   },

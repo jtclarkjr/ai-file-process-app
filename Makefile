@@ -82,14 +82,12 @@ prod-rebuild: ## Force rebuild and start
 
 fmt: ## Format all code
 	bun run fmt
-	cd backend && bun run format
 
 fmt-check: ## Check formatting
 	bun run fmt:check
 
-lint: ## Lint frontend (oxlint) + backend (biome)
+lint: ## Lint frontend + backend (oxlint)
 	bun run lint
-	cd backend && bun run lint
 
 test: ## Run tests
 	bun run test:run

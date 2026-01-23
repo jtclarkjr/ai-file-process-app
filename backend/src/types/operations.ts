@@ -2,22 +2,22 @@
  * Operation definitions and prompts
  */
 export const Operation = {
-  SUMMARIZE: "summarize",
-  EXTRACT: "extract",
-  ANALYZE: "analyze",
-  CLASSIFY: "classify",
-  CUSTOM: "custom",
+  SUMMARIZE: 'summarize',
+  EXTRACT: 'extract',
+  ANALYZE: 'analyze',
+  CLASSIFY: 'classify',
+  CUSTOM: 'custom',
 } as const;
 
 export type Operation = (typeof Operation)[keyof typeof Operation];
 
-const operationPrompts: Record<Exclude<Operation, "custom">, string> = {
+const operationPrompts: Record<Exclude<Operation, 'custom'>, string> = {
   [Operation.SUMMARIZE]:
-    "Provide a concise summary of the following content. Focus on the main points and key takeaways.",
+    'Provide a concise summary of the following content. Focus on the main points and key takeaways.',
   [Operation.EXTRACT]:
-    "Extract all important information from the following content. Include key facts, figures, names, dates, and any structured data. Format the output as a structured list.",
+    'Extract all important information from the following content. Include key facts, figures, names, dates, and any structured data. Format the output as a structured list.',
   [Operation.ANALYZE]:
-    "Analyze the following content in depth. Identify themes, patterns, sentiment, and provide insights. Include both objective observations and interpretive analysis.",
+    'Analyze the following content in depth. Identify themes, patterns, sentiment, and provide insights. Include both objective observations and interpretive analysis.',
   [Operation.CLASSIFY]: `Classify the following content. Determine:
 1. Document type (e.g., report, letter, article, code, etc.)
 2. Primary topic/subject
@@ -33,17 +33,17 @@ export function toPrompt(
 ): string {
   const instruction = languageInstruction(language);
   if (operation === Operation.CUSTOM) {
-    return `${customPrompt ?? "Process this content."}\n\n${instruction}`;
+    return `${customPrompt ?? 'Process this content.'}\n\n${instruction}`;
   }
   return `${operationPrompts[operation]}\n\n${instruction}`;
 }
 
 export function languageInstruction(language?: string | null): string {
   const normalized = language?.toLowerCase();
-  if (normalized === "ja" || normalized === "jp" || normalized === "japanese") {
-    return "Respond in Japanese.";
+  if (normalized === 'ja' || normalized === 'jp' || normalized === 'japanese') {
+    return 'Respond in Japanese.';
   }
-  return "Respond in English.";
+  return 'Respond in English.';
 }
 
 export function parseOperation(value: string): Operation {
@@ -55,6 +55,6 @@ export function parseOperation(value: string): Operation {
   }
 
   throw new Error(
-    `Invalid operation: ${value}. Valid options: ${validOps.join(", ")}`,
+    `Invalid operation: ${value}. Valid options: ${validOps.join(', ')}`,
   );
 }

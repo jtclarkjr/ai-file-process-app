@@ -4,14 +4,14 @@
 export const config = {
   // AI Provider settings
   openaiApiKey: process.env.OPENAI_API_KEY,
-  openaiModel: process.env.OPENAI_MODEL ?? "gpt-4-turbo",
+  openaiModel: process.env.OPENAI_MODEL ?? 'gpt-4-turbo',
   anthropicApiKey: process.env.ANTHROPIC_API_KEY,
-  anthropicModel: process.env.ANTHROPIC_MODEL ?? "claude-3-sonnet-20240229",
+  anthropicModel: process.env.ANTHROPIC_MODEL ?? 'claude-3-sonnet-20240229',
 
   // Server settings
-  host: process.env.HOST ?? "0.0.0.0",
+  host: process.env.HOST ?? '0.0.0.0',
   port: Number(process.env.PORT ?? 8080),
-  logLevel: process.env.LOG_LEVEL ?? "info",
+  logLevel: process.env.LOG_LEVEL ?? 'info',
 
   // File processing limits
   maxFileSizeMb: Number(process.env.MAX_FILE_SIZE_MB ?? 10),

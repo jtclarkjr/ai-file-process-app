@@ -1,11 +1,11 @@
-import type { TokenUsage } from "../types";
+import type { TokenUsage } from '../types';
 
 /**
  * File content union type
  */
 export type FileContent =
-  | { type: "text"; text: string }
-  | { type: "image"; data: Uint8Array; mediaType: string };
+  | { type: 'text'; text: string }
+  | { type: 'image'; data: Uint8Array; mediaType: string };
 
 /**
  * AI request structure
