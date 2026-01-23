@@ -12,7 +12,6 @@ from app.exceptions import (
     ProviderNotConfiguredError,
 )
 from app.models import (
-    Operation,
     ProcessResponse,
     ProcessResult,
     ProviderInfo,
@@ -25,7 +24,6 @@ from app.models import (
 from app.services import (
     AiRequest,
     AnthropicProvider,
-    FileContent,
     FileExtractor,
     OpenAiProvider,
 )
@@ -52,7 +50,7 @@ def set_providers(
     _file_extractor = extractor
 
 
-@router.post("/process")
+@router.post("/process", response_model=ProcessResponse)
 async def process_file(
     provider: str = Query(..., description="AI provider to use"),
     operation: str = Query(..., description="Operation to perform"),
@@ -160,7 +158,7 @@ async def process_file(
         raise
 
 
-@router.get("/supported-types")
+@router.get("/supported-types", response_model=SupportedTypesResponse)
 async def get_supported_types() -> SupportedTypesResponse:
     """Get list of supported file types."""
     supported = SupportedFileType.all_supported()
@@ -177,7 +175,7 @@ async def get_supported_types() -> SupportedTypesResponse:
     return SupportedTypesResponse(success=True, data=data)
 
 
-@router.get("/providers")
+@router.get("/providers", response_model=ProvidersResponse)
 async def get_providers() -> ProvidersResponse:
     """Get list of available AI providers."""
     providers = []

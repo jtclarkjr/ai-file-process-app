@@ -18,6 +18,8 @@ services:
       - LOG_LEVEL=DEBUG
       - HOST=0.0.0.0
       - PORT=8080
+    stdin_open: true
+    tty: true
     profiles:
       - dev
 

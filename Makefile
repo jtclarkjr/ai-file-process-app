@@ -45,6 +45,12 @@ docker-dev-down: ## Stop dev backend
 docker-dev-logs: ## Show dev backend logs
 	docker-compose --profile dev logs -f backend-dev
 
+docker-dev-shell: ## Shell into running dev container
+	docker-compose --profile dev exec backend-dev bash
+
+docker-dev-run: ## Run a one-off dev container with shell
+	docker-compose --profile dev run --rm -it backend-dev bash
+
 docker-ps: ## Show running containers
 	docker-compose ps
 
