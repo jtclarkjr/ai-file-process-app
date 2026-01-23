@@ -1,6 +1,21 @@
 """Configuration module for environment variables."""
 
-from pydantic_settings import BaseSettings
+from pathlib import Path
+
+from dotenv import load_dotenv
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Explicitly load .env from multiple possible locations
+_env_paths = [
+    Path(__file__).parent.parent.parent / ".env",  # backend/.env
+    Path(__file__).parent.parent.parent.parent / ".env",  # project root/.env
+    Path.cwd() / ".env",  # current working directory
+]
+
+for _env_path in _env_paths:
+    if _env_path.exists():
+        load_dotenv(_env_path)
+        break
 
 
 class Settings(BaseSettings):
@@ -26,10 +41,12 @@ class Settings(BaseSettings):
     max_decompression_ratio: int = 100  # 100:1 max ratio
     max_decompressed_size_mb: int = 50  # 50MB max
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=False,
+        extra="ignore",
+    )
 
     @property
     def max_file_size_bytes(self) -> int:

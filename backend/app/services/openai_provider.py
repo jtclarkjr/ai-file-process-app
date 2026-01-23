@@ -42,6 +42,7 @@ class OpenAiProvider(AiProvider):
             "vision" in self.model
             or "gpt-4-turbo" in self.model
             or "gpt-4o" in self.model
+            or "gpt-5-mini" in self.model
         )
 
     async def process(self, request: AiRequest) -> AiResponse:
