@@ -162,19 +162,16 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
 		padding: 0;
-		background: #f3f4f6;
-		border: 1px solid #e5e7eb;
-		border-radius: 6px;
-		font-size: 1rem;
+		background: transparent;
+		border: none;
+		font-size: 0.875rem;
 		color: #374151;
 		cursor: pointer;
 	}
 
 	.section-toggle:hover {
-		background: #e5e7eb;
+		color: #111827;
 	}
 
 	section.collapsed {
