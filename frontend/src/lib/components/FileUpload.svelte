@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte';
-import { Play, Trash2 } from '@lucide/svelte';
+    import { Play, Trash2 } from '@lucide/svelte';
 
 	let dragOver = $state(false);
 	let fileInput: HTMLInputElement;
