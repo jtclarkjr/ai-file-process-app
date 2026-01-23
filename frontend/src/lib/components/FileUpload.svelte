@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fileProcessorStore } from '$lib/stores/fileProcessor.svelte';
-	import { Play, RefreshCw, Trash2 } from '@lucide/svelte';
+import { Play, Trash2 } from '@lucide/svelte';
 
 	let dragOver = $state(false);
 	let fileInput: HTMLInputElement;
@@ -52,13 +52,6 @@
 		}
 	}
 
-	function handleReset() {
-		fileProcessorStore.reset();
-		if (fileInput) {
-			fileInput.value = '';
-		}
-	}
-
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return `${bytes} B`;
 		if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -99,20 +92,6 @@
 						<Play size={18} />
 					</span>
 				</span>
-				{#if fileProcessorStore.result || fileProcessorStore.error}
-					<span
-						class="action-icon reset-icon"
-						role="button"
-						tabindex="0"
-						aria-label="Start over"
-						onclick={handleReset}
-						onkeydown={(e) => e.key === 'Enter' && handleReset()}
-					>
-						<span class="icon-mark" aria-hidden="true">
-							<RefreshCw size={18} />
-						</span>
-					</span>
-				{/if}
 				<span
 					class="action-icon clear-icon"
 					role="button"
@@ -272,14 +251,6 @@
 
 	.process-icon:hover {
 		background: #4f46e5;
-	}
-
-	.reset-icon {
-		background: #6b7280;
-	}
-
-	.reset-icon:hover {
-		background: #4b5563;
 	}
 
 	.clear-icon {
