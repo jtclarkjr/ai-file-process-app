@@ -42,8 +42,14 @@ if (!openaiProvider && !anthropicProvider) {
 
 const fileExtractor = new FileExtractor();
 
-// Create Hono app
-const app = new Hono();
+// Create Hono app with typed context variables
+const app = new Hono<{
+  Variables: {
+    openaiProvider: AiProvider | null;
+    anthropicProvider: AiProvider | null;
+    fileExtractor: FileExtractor;
+  };
+}>();
 
 // Middleware
 app.use('*', logger());
@@ -87,15 +93,15 @@ app.get('/', (c) => {
 });
 
 // Start server
-console.log(`
-╔══════════════════════════════════════════════════════════════╗
-║                   AI File Processor                          ║
-╠══════════════════════════════════════════════════════════════╣
-║  Server:     http://${config.host}:${config.port}                          ║
-║  Max File:   ${config.maxFileSizeMb}MB                                        ║
-║  AI Timeout: ${config.aiTimeoutSecs}s                                         ║
-╚══════════════════════════════════════════════════════════════╝
-`);
+// console.log(`
+// ╔══════════════════════════════════════════════════════════════╗
+// ║                   AI File Processor                          ║
+// ╠══════════════════════════════════════════════════════════════╣
+// ║  Server:     http://${config.host}:${config.port}                             ║
+// ║  Max File:   ${config.maxFileSizeMb}MB                                            ║
+// ║  AI Timeout: ${config.aiTimeoutSecs}s                                             ║
+// ╚══════════════════════════════════════════════════════════════╝
+// `);
 
 export default {
   port: config.port,
