@@ -5,12 +5,14 @@ A fullstack application for processing files with AI providers (OpenAI, Anthropi
 ## Tech Stack
 
 ### Frontend
+
 - **SvelteKit 2.50+** - Full-stack Svelte framework with static adapter
 - **Svelte 5** - With runes for state management
 - **Vite 8** - Rust-based bundler for fast builds
 - **TypeScript** - Type safety
 
 ### Backend
+
 - **FastAPI** - Modern Python async web framework
 - **Pydantic** - Data validation and settings management
 - **OpenAI/Anthropic SDKs** - Official AI provider clients
@@ -19,6 +21,7 @@ A fullstack application for processing files with AI providers (OpenAI, Anthropi
 - **python-docx** - DOCX parsing
 
 ### Tooling
+
 - **Bun** - JavaScript runtime & package manager
 - **Docker** - Container deployment
 - **oxlint** - Rust-based linter
@@ -105,6 +108,7 @@ cd backend && uvicorn app.main:app --reload --port 8080
 ```
 
 **URLs:**
+
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8080/api
 - API Documentation: http://localhost:8080/docs
@@ -116,11 +120,11 @@ Run `make help` to see all available commands.
 
 ### Development
 
-| Command              | Description                                       |
-| -------------------- | ------------------------------------------------- |
-| `make dev`           | Start frontend + backend concurrently             |
-| `make frontend`      | Start frontend only (SvelteKit dev server)        |
-| `make backend`       | Start backend only (uvicorn with hot reload)      |
+| Command         | Description                                  |
+| --------------- | -------------------------------------------- |
+| `make dev`      | Start frontend + backend concurrently        |
+| `make frontend` | Start frontend only (SvelteKit dev server)   |
+| `make backend`  | Start backend only (uvicorn with hot reload) |
 
 ### Build
 
@@ -189,12 +193,14 @@ make prod-build
 ```
 
 The Docker deployment:
+
 - Multi-stage build: Frontend → Python Runtime
 - Serves SvelteKit static files from the backend
 - Single container at http://localhost:8080
 - Python 3.12 slim image
 
 **Docker Build Process:**
+
 1. **Stage 1 (Frontend)**: Builds SvelteKit static files using Bun
 2. **Stage 2 (Runtime)**: Python 3.12 with uvicorn serving both API + static files
 
@@ -212,6 +218,7 @@ cp -r frontend/build backend/static
 ```
 
 Then run the server:
+
 ```bash
 export OPENAI_API_KEY=sk-...
 export ANTHROPIC_API_KEY=sk-ant-...
@@ -220,14 +227,14 @@ cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8080
 
 ## API Endpoints
 
-| Method | Endpoint                    | Description                     |
-| ------ | --------------------------- | ------------------------------- |
-| GET    | `/api/health`               | Health check                    |
-| POST   | `/api/files/process`        | Process file with AI            |
-| GET    | `/api/files/supported-types`| List supported file types       |
-| GET    | `/api/files/providers`      | List available AI providers     |
-| GET    | `/docs`                     | OpenAPI documentation (Swagger) |
-| GET    | `/redoc`                    | ReDoc documentation             |
+| Method | Endpoint                     | Description                     |
+| ------ | ---------------------------- | ------------------------------- |
+| GET    | `/api/health`                | Health check                    |
+| POST   | `/api/files/process`         | Process file with AI            |
+| GET    | `/api/files/supported-types` | List supported file types       |
+| GET    | `/api/files/providers`       | List available AI providers     |
+| GET    | `/docs`                      | OpenAPI documentation (Swagger) |
+| GET    | `/redoc`                     | ReDoc documentation             |
 
 ## Environment Variables
 
@@ -264,12 +271,14 @@ REQUEST_TIMEOUT_SECS=120           # Overall request timeout
 ### Development vs Production
 
 **Development (.env file in root):**
+
 ```bash
 OPENAI_API_KEY=sk-...
 ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 **Production (Docker environment):**
+
 ```bash
 # docker-compose.yml loads .env automatically
 # OR pass as environment variables:

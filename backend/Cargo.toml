@@ -14,13 +14,13 @@ tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "time"] }
 
 # AI file processing dependencies
-reqwest = { version = "0.12", features = ["json", "multipart"] }
 async-trait = "0.1"
-thiserror = "2.0"
-infer = "0.16"
-pdf-extract = "0.7"
-docx-rs = "0.4"
-bytes = "1.9"
 base64 = "0.22"
-mime = "0.3"
+bytes = "1.9"
+docx-rs = "0.4"
 futures = "0.3"
+infer = "0.16"
+mime = "0.3"
+pdf-extract = "0.7"
+reqwest = { version = "0.12", features = ["json", "multipart"] }
+thiserror = "2.0"

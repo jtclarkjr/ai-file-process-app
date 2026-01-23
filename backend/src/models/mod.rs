@@ -10,7 +10,7 @@ pub use anthropic::AnthropicProvider;
 pub use config::Config;
 pub use file_extractor::{ExtractedContent, FileExtractor, SupportedFileType};
 pub use file_processing::{
-    FileProcessingState, ProcessQuery, ProcessResponse, ProcessResult, ProviderInfo,
-    ProvidersResponse, SupportedTypeInfo, SupportedTypesResponse, TokenUsageResponse,
+  FileProcessingState, ProcessQuery, ProcessResponse, ProcessResult, ProviderInfo,
+  ProvidersResponse, SupportedTypeInfo, SupportedTypesResponse, TokenUsageResponse,
 };
 pub use openai::OpenAiProvider;
