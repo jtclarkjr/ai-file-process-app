@@ -67,6 +67,8 @@ import { Play, Trash2 } from '@lucide/svelte';
 			ondragover={handleDragOver}
 			ondragleave={handleDragLeave}
 			ondrop={handleDrop}
+			role="region"
+			aria-label="Selected file"
 		>
 			<div class="file-info">
 				<span class="file-icon">📄</span>

@@ -3,7 +3,7 @@ import type {
 	ProcessResponse,
 	ProcessResult,
 	ProviderInfo,
-	SupportedTypeInfo
+	SupportedTypeInfo,
 } from '$lib/types/fileProcessor';
 
 // Svelte 5 runes-based store
