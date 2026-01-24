@@ -119,12 +119,14 @@ export function toMime(fileType: SupportedFileType): string {
 }
 
 export function isImage(fileType: SupportedFileType): boolean {
-  return [
-    SupportedFileType.IMAGE_JPEG,
-    SupportedFileType.IMAGE_PNG,
-    SupportedFileType.IMAGE_GIF,
-    SupportedFileType.IMAGE_WEBP,
-  ].includes(fileType);
+  return (
+    [
+      SupportedFileType.IMAGE_JPEG,
+      SupportedFileType.IMAGE_PNG,
+      SupportedFileType.IMAGE_GIF,
+      SupportedFileType.IMAGE_WEBP,
+    ] as SupportedFileType[]
+  ).includes(fileType);
 }
 
 export interface SupportedTypeInfo {
