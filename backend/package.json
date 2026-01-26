@@ -6,7 +6,7 @@
     "dev": "bun run --hot src/index.ts",
     "start": "bun run src/index.ts",
     "test": "bun test",
-    "lint": "oxlint src/",
+    "lint": "oxlint",
     "format": "dprint fmt",
     "typecheck": "tsc --noEmit"
   },
