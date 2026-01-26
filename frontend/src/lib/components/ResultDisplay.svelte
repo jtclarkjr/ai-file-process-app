@@ -18,7 +18,7 @@
     }
   })
 
-  function copyToClipboard() {
+  const copyToClipboard = () => {
     if (fileProcessorStore.result?.result) {
       navigator.clipboard.writeText(fileProcessorStore.result.result)
       hasCopied = true
@@ -39,7 +39,7 @@
     }
   })
 
-  function handleKeydown(event: KeyboardEvent) {
+  const handleKeydown = (event: KeyboardEvent) => {
     if (event.key === 'Escape' && expanded) {
       closeExpanded()
     }
@@ -50,11 +50,11 @@
     return () => window.removeEventListener('keydown', handleKeydown)
   })
 
-  function openExpanded() {
+  const openExpanded = () => {
     expanded = true
   }
 
-  function closeExpanded() {
+  const closeExpanded = () => {
     expanded = false
   }
 </script>

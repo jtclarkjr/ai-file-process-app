@@ -17,7 +17,7 @@
     }
   })
 
-  function dismissPrivacyNotice() {
+  const dismissPrivacyNotice = () => {
     showPrivacyNotice = false
     localStorage.setItem('privacyNoticeDismissed', 'true')
   }
