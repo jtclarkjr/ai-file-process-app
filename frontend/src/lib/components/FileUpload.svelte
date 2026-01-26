@@ -9,17 +9,17 @@
     TRANSLATIONS[fileProcessorStore.selectedLanguage] ?? TRANSLATIONS.en
   )
 
-  function handleDragOver(e: DragEvent) {
+  const handleDragOver = (e: DragEvent) => {
     e.preventDefault()
     dragOver = true
   }
 
-  function handleDragLeave(e: DragEvent) {
+  const handleDragLeave = (e: DragEvent) => {
     e.preventDefault()
     dragOver = false
   }
 
-  function handleDrop(e: DragEvent) {
+  const handleDrop = (e: DragEvent) => {
     e.preventDefault()
     dragOver = false
 
@@ -32,31 +32,31 @@
     }
   }
 
-  function handleFileSelect(e: Event) {
+  const handleFileSelect = (e: Event) => {
     const input = e.target as HTMLInputElement
     if (input.files && input.files.length > 0) {
       fileProcessorStore.setFile(input.files[0])
     }
   }
 
-  function triggerFileSelect() {
+  const triggerFileSelect = () => {
     fileInput.click()
   }
 
-  function clearFile() {
+  const clearFile = () => {
     fileProcessorStore.setFile(null)
     if (fileInput) {
       fileInput.value = ''
     }
   }
 
-  function handleProcess() {
+  const handleProcess = () => {
     if (fileProcessorStore.canProcess) {
       fileProcessorStore.processFile()
     }
   }
 
-  function formatFileSize(bytes: number): string {
+  const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
     return `${(bytes / (1024 * 1024)).toFixed(2)} MB`
