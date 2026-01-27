@@ -159,10 +159,6 @@
     color: #b91c1c;
   }
 
-  .error-icon {
-    font-size: 1.25rem;
-  }
-
   .error p {
     margin: 0;
   }
