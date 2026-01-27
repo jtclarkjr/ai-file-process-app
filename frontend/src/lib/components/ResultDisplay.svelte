@@ -4,7 +4,7 @@
   import { onDestroy, onMount } from 'svelte'
   import { Copy, Maximize2, X } from '@lucide/svelte'
 
-  let copyTooltip = 'Copy'
+  let copyTooltip = $state('Copy')
   let resetTooltipTimeout: ReturnType<typeof setTimeout> | undefined
   let expanded = $state(false)
   let hasCopied = $state(false)
