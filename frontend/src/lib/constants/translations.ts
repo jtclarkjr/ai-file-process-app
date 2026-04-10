@@ -33,7 +33,7 @@ export const TRANSLATIONS: Record<
     appSubtitle: "Upload a file and let AI analyze it for you",
     privacyLabel: "Privacy First:",
     privacyBody:
-      "Your files are processed in-memory only and immediately discarded. No files are stored on our servers.",
+      "Your files are processed in-memory only and immediately discarded. No files are stored.",
     selectFile: "Select a File",
     configureProcessing: "Configure Processing",
     operation: "Operation",
