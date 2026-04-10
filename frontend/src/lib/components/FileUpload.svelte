@@ -4,6 +4,7 @@
   import { Play, Trash2 } from '@lucide/svelte'
 
   let dragOver = $state(false)
+  // eslint-disable-next-line no-unassigned-vars -- assigned by Svelte via bind:this
   let fileInput: HTMLInputElement
   const text = $derived(
     TRANSLATIONS[fileProcessorStore.selectedLanguage] ?? TRANSLATIONS.en
