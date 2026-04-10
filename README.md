@@ -23,6 +23,7 @@ AI-powered file processing with a SvelteKit frontend and a Rust backend. Users c
 ### Tooling
 
 - **Bun** for JavaScript package management and root scripts
+- **Vite+ (`vp`)** for frontend dev, build, and checks
 - **Cargo** for Rust builds and tests
 - **cargo-watch** for backend hot reload during development
 - **oxlint**, **dprint**, **Prettier**, and **clippy** for linting and formatting
@@ -57,7 +58,14 @@ AI-powered file processing with a SvelteKit frontend and a Rust backend. Users c
 ### Required
 
 - **Bun**
+- **Vite+ (`vp`)**
 - **Rust stable toolchain** with `cargo`
+
+Install `vp` from [viteplus.dev](https://viteplus.dev):
+
+```bash
+curl -fsSL https://vite.plus | bash
+```
 
 ### Recommended
 
@@ -73,17 +81,20 @@ cargo install cargo-watch
 # 1. Clone and enter the project
 git clone <repo-url> && cd ai-file-process-app
 
-# 2. Install dependencies
+# 2. Install Vite+
+curl -fsSL https://vite.plus | bash
+
+# 3. Install dependencies
 make install
 
-# 3. Create local environment file
+# 4. Create local environment file
 cp .env.example .env
 
-# 4. Add at least one provider API key to .env
+# 5. Add at least one provider API key to .env
 # OPENAI_API_KEY=...
 # or ANTHROPIC_API_KEY=...
 
-# 5. Start frontend + backend
+# 6. Start frontend + backend
 make dev
 ```
 
@@ -101,7 +112,7 @@ Run each side separately if needed:
 
 ```bash
 # Terminal 1
-cd frontend && bun run dev
+cd frontend && vp dev
 
 # Terminal 2
 cd backend && cargo watch -x run
