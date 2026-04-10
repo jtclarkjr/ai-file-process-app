@@ -1,86 +1,70 @@
 # AI File Processing App
 
-A fullstack application for processing files with AI providers (OpenAI, Anthropic). Built with SvelteKit (frontend) and FastAPI (backend).
+AI-powered file processing with a SvelteKit frontend and a Rust backend. Users can upload documents, images, or code files and run operations such as summarize, extract, analyze, classify, or a custom prompt against OpenAI or Anthropic.
 
 ## Tech Stack
 
 ### Frontend
 
-- **SvelteKit 2.50+** - Full-stack Svelte framework with static adapter
-- **Svelte 5** - With runes for state management
-- **Vite 8** - Rust-based bundler for fast builds
-- **TypeScript** - Type safety
+- **SvelteKit 2** for the app shell and routing
+- **Svelte 5** for UI state
+- **Vite 8** for local development and builds
+- **TypeScript** for type safety
 
 ### Backend
 
-- **FastAPI** - Modern Python async web framework
-- **Pydantic** - Data validation and settings management
-- **OpenAI/Anthropic SDKs** - Official AI provider clients
-- **python-magic** - MIME type detection
-- **pypdf** - PDF text extraction
-- **python-docx** - DOCX parsing
+- **Rust** for the backend implementation
+- **Axum 0.7** for the HTTP API
+- **Tokio** for async runtime
+- **tower-http** for CORS, tracing, request limits, and static file serving
+- **reqwest** for OpenAI and Anthropic API calls
+- **infer**, **pdf-extract**, and **docx-rs** for file detection and text extraction
 
 ### Tooling
 
-- **Bun** - JavaScript runtime & package manager
-- **Docker** - Container deployment
-- **oxlint** - Rust-based linter
-- **Prettier** - Code formatting
-- **pytest** - Python testing
+- **Bun** for JavaScript package management and root scripts
+- **Cargo** for Rust builds and tests
+- **cargo-watch** for backend hot reload during development
+- **oxlint**, **dprint**, **Prettier**, and **clippy** for linting and formatting
 
 ## Project Structure
 
-```
-├── frontend/           # SvelteKit static app
+```text
+.
+├── frontend/                # SvelteKit frontend
 │   ├── src/
-│   │   ├── lib/        # Reusable components
-│   │   └── routes/     # SvelteKit routes
-│   ├── vite.config.ts
-│   └── package.json
-│
-├── backend/            # FastAPI REST API
-│   ├── app/
-│   │   ├── main.py     # FastAPI app entry
-│   │   ├── config.py   # Environment config
-│   │   ├── exceptions.py
-│   │   ├── models/     # Pydantic models
-│   │   ├── services/   # Business logic
-│   │   └── routes/     # API endpoints
-│   ├── tests/          # Test suite
-│   └── pyproject.toml  # Python dependencies
-│
-├── package.json        # Root bun scripts
-├── Dockerfile          # Multi-stage build
-├── docker-compose.yml  # Docker compose config
-└── Makefile            # Development commands
+│   │   ├── lib/
+│   │   └── routes/
+│   ├── package.json
+│   └── vite.config.ts
+├── backend/                 # Rust API server
+│   ├── src/
+│   │   ├── main.rs
+│   │   ├── errors.rs
+│   │   ├── models/
+│   │   ├── routes/
+│   │   └── services/
+│   └── Cargo.toml
+├── .env.example
+├── Cargo.toml               # Workspace config
+├── Makefile
+├── Dockerfile
+└── docker-compose.yml
 ```
 
 ## Prerequisites
 
 ### Required
 
-```bash
-# Bun (JavaScript runtime & package manager)
-curl -fsSL https://bun.sh/install | bash
+- **Bun**
+- **Rust stable toolchain** with `cargo`
 
-# Python 3.12+
-# macOS: brew install python@3.12
-# Ubuntu: sudo apt install python3.12 python3.12-venv
+### Recommended
 
-# libmagic (for file type detection)
-# macOS: brew install libmagic
-# Ubuntu: sudo apt install libmagic1
-
-# Docker (optional, for containerized deployment)
-# Download from https://www.docker.com/products/docker-desktop
-```
-
-### Optional
+- **cargo-watch** for backend hot reload
 
 ```bash
-# Make (for Makefile commands)
-brew install make  # macOS
-apt-get install make  # Ubuntu/Debian
+cargo install cargo-watch
 ```
 
 ## Quick Start
@@ -89,245 +73,160 @@ apt-get install make  # Ubuntu/Debian
 # 1. Clone and enter the project
 git clone <repo-url> && cd ai-file-process-app
 
-# 2. Install frontend dependencies
-cd frontend && bun install && cd ..
+# 2. Install dependencies
+make install
 
-# 3. Install backend dependencies
-cd backend && pip install -e ".[dev]" && cd ..
-
-# 4. Create .env file with API keys
+# 3. Create local environment file
 cp .env.example .env
-# Edit .env and add your API keys
 
-# 5. Start development servers
-# Terminal 1: Frontend
+# 4. Add at least one provider API key to .env
+# OPENAI_API_KEY=...
+# or ANTHROPIC_API_KEY=...
+
+# 5. Start frontend + backend
+make dev
+```
+
+This starts:
+
+- Frontend at `http://localhost:5173`
+- Backend API at `http://localhost:8080/api`
+- Health check at `http://localhost:8080/api/health`
+
+The frontend redirects `/` to `/process` and talks to the backend on port `8080`.
+
+## Manual Development
+
+Run each side separately if needed:
+
+```bash
+# Terminal 1
 cd frontend && bun run dev
 
-# Terminal 2: Backend
-cd backend && uvicorn app.main:app --reload --port 8080
+# Terminal 2
+cd backend && cargo watch -x run
 ```
 
-**URLs:**
-
-- Frontend: http://localhost:5173
-- Backend API: http://localhost:8080/api
-- API Documentation: http://localhost:8080/docs
-- The frontend proxies `/api` requests to the backend
-
-## Makefile Commands
-
-Run `make help` to see all available commands.
-
-### Development
-
-| Command         | Description                                  |
-| --------------- | -------------------------------------------- |
-| `make dev`      | Start frontend + backend concurrently        |
-| `make frontend` | Start frontend only (SvelteKit dev server)   |
-| `make backend`  | Start backend only (uvicorn with hot reload) |
-
-### Build
-
-| Command               | Description                  |
-| --------------------- | ---------------------------- |
-| `make build`          | Build everything             |
-| `make build-frontend` | Build SvelteKit static files |
-
-### Production (Docker)
-
-| Command             | Description             |
-| ------------------- | ----------------------- |
-| `make prod`         | Start full stack        |
-| `make prod-build`   | Build and start         |
-| `make prod-logs`    | Show container logs     |
-| `make prod-down`    | Stop all containers     |
-| `make prod-rebuild` | Force rebuild and start |
-
-### Quality
-
-| Command          | Description                     |
-| ---------------- | ------------------------------- |
-| `make fmt`       | Format all code                 |
-| `make fmt-check` | Check formatting                |
-| `make lint`      | Lint frontend + backend         |
-| `make test`      | Run tests                       |
-| `make check`     | TypeScript/Svelte type checking |
-
-### Setup & Clean
-
-| Command          | Description                         |
-| ---------------- | ----------------------------------- |
-| `make setup`     | Full setup (install + dependencies) |
-| `make install`   | Install all dependencies            |
-| `make clean`     | Clean build artifacts               |
-| `make clean-all` | Clean everything incl. node_modules |
-
-## Bun Scripts
-
-Alternative to Makefile:
+If you do not have `cargo-watch` installed:
 
 ```bash
-bun run dev           # Start frontend + backend
-bun run dev:frontend  # Start frontend only
-bun run dev:backend   # Start backend
-bun run build         # Build everything
-bun run fmt           # Format code
-bun run lint          # Lint code
-bun run test          # Run tests
+cd backend && cargo run
 ```
-
-## Production Deployment
-
-### Docker (Recommended)
-
-```bash
-# Create .env file with API keys
-cp .env.example .env
-# Edit .env and add your API keys
-
-# Build and run with docker-compose
-docker-compose up --build
-
-# Or use Makefile
-make prod-build
-```
-
-The Docker deployment:
-
-- Multi-stage build: Frontend → Python Runtime
-- Serves SvelteKit static files from the backend
-- Single container at http://localhost:8080
-- Python 3.12 slim image
-
-**Docker Build Process:**
-
-1. **Stage 1 (Frontend)**: Builds SvelteKit static files using Bun
-2. **Stage 2 (Runtime)**: Python 3.12 with uvicorn serving both API + static files
-
-### Manual Build
-
-```bash
-# Build frontend
-cd frontend && bun run build && cd ..
-
-# Install backend dependencies
-cd backend && pip install -e . && cd ..
-
-# Copy frontend build to static directory
-cp -r frontend/build backend/static
-```
-
-Then run the server:
-
-```bash
-export OPENAI_API_KEY=sk-...
-export ANTHROPIC_API_KEY=sk-ant-...
-cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8080
-```
-
-## API Endpoints
-
-| Method | Endpoint                     | Description                     |
-| ------ | ---------------------------- | ------------------------------- |
-| GET    | `/api/health`                | Health check                    |
-| POST   | `/api/files/process`         | Process file with AI            |
-| GET    | `/api/files/supported-types` | List supported file types       |
-| GET    | `/api/files/providers`       | List available AI providers     |
-| GET    | `/docs`                      | OpenAPI documentation (Swagger) |
-| GET    | `/redoc`                     | ReDoc documentation             |
 
 ## Environment Variables
 
-### Required for Running
-
-At least one AI provider API key is required:
+The default local configuration is in [`.env.example`](/Users/jamesclark/GitHub/ai-file-process-app/.env.example).
 
 ```bash
-# OpenAI API key
+# Optional Rust logging
+RUST_LOG=backend=debug,tower_http=debug
+
+# Frontend -> backend base URL
+VITE_API_BASE=http://localhost:8080
+
+# AI providers
 OPENAI_API_KEY=sk-...
+OPENAI_MODEL=gpt-4-turbo
 
-# OR Anthropic API key
 ANTHROPIC_API_KEY=sk-ant-...
+ANTHROPIC_MODEL=claude-3-sonnet-20240229
+
+# Limits
+MAX_FILE_SIZE_MB=10
+REQUEST_TIMEOUT_SECS=120
+AI_TIMEOUT_SECS=60
 ```
 
-### Optional Configuration
+At least one AI provider key must be configured for file processing to work.
 
-```bash
-# AI Provider settings
-OPENAI_MODEL=gpt-4-turbo           # Default: gpt-4-turbo
-ANTHROPIC_MODEL=claude-3-sonnet-20240229  # Default: claude-3-sonnet-20240229
+## Supported Operations
 
-# Server settings
-HOST=0.0.0.0                       # Server bind address
-PORT=8080                          # Server port
-LOG_LEVEL=INFO                     # Logging level (DEBUG, INFO, WARNING, ERROR)
+- `summarize`
+- `extract`
+- `analyze`
+- `classify`
+- `custom`
 
-# File processing
-MAX_FILE_SIZE_MB=10                # Max upload size
-AI_TIMEOUT_SECS=60                 # AI provider timeout
-REQUEST_TIMEOUT_SECS=120           # Overall request timeout
-```
+## Supported File Types
 
-### Development vs Production
+- PDF
+- DOCX
+- Plain text
+- Markdown
+- Source code files such as `py`, `js`, `ts`, `tsx`, `rs`, `go`, `java`, `json`, `yaml`, `html`, `css`, `sql`, `toml`
+- Images: `jpg`, `jpeg`, `png`, `gif`, `webp`
 
-**Development (.env file in root):**
+The backend validates file type using magic bytes when possible and falls back to extension or declared MIME type where needed.
 
-```bash
-OPENAI_API_KEY=sk-...
-ANTHROPIC_API_KEY=sk-ant-...
-```
+## API Endpoints
 
-**Production (Docker environment):**
+| Method | Endpoint                     | Description                |
+| ------ | ---------------------------- | -------------------------- |
+| GET    | `/api/health`                | Health check               |
+| POST   | `/api/files/process`         | Process an uploaded file   |
+| GET    | `/api/files/supported-types` | List accepted file types   |
+| GET    | `/api/files/providers`       | List configured providers  |
 
-```bash
-# docker-compose.yml loads .env automatically
-# OR pass as environment variables:
-docker run -e OPENAI_API_KEY=sk-... -e ANTHROPIC_API_KEY=sk-ant-... ...
-```
+## Common Commands
+
+Run `make help` for the full list.
+
+### Development
+
+| Command         | Description                              |
+| --------------- | ---------------------------------------- |
+| `make dev`      | Start frontend and backend               |
+| `make frontend` | Start frontend only                      |
+| `make backend`  | Start backend only with hot reload       |
+
+### Quality
+
+| Command          | Description                          |
+| ---------------- | ------------------------------------ |
+| `make fmt`       | Format frontend and backend          |
+| `make fmt-check` | Check formatting                     |
+| `make lint`      | Run oxlint and clippy                |
+| `make test`      | Run frontend tests and `cargo test`  |
+| `make check`     | Run Svelte and TypeScript checks     |
+
+### Setup and Cleanup
+
+| Command          | Description                                |
+| ---------------- | ------------------------------------------ |
+| `make install`   | Install Bun packages and build the backend |
+| `make setup`     | Alias for full setup                       |
+| `make clean`     | Remove build artifacts                     |
+| `make clean-all` | Remove build artifacts and dependencies    |
 
 ## Architecture
 
+```text
+┌─────────────────────────────┐
+│      SvelteKit Frontend     │
+│  - Upload UI                │
+│  - Operation selection      │
+│  - Result display           │
+└──────────────┬──────────────┘
+               │ HTTP
+               ▼
+┌─────────────────────────────┐
+│       Rust API (Axum)       │
+│  - Multipart upload         │
+│  - File validation          │
+│  - Text/image extraction    │
+│  - Provider dispatch        │
+└──────────────┬──────────────┘
+               │
+               ▼
+┌─────────────────────────────┐
+│ OpenAI / Anthropic APIs     │
+└─────────────────────────────┘
 ```
-┌─────────────────────────────────────────┐
-│           Docker Container              │
-│  ┌─────────────────────────────────┐    │
-│  │   Python Backend (FastAPI)      │    │
-│  │  - Serves API at /api/*         │    │
-│  │  - Serves static files at /     │    │
-│  │  - OpenAI/Anthropic SDKs        │    │
-│  │  - Auto-generated API docs      │    │
-│  └─────────────────────────────────┘    │
-│              ↓ serves                   │
-│  ┌─────────────────────────────────┐    │
-│  │   Static Frontend (SvelteKit)   │    │
-│  │   - Built at /app/static        │    │
-│  │   - Client-side routing (SPA)   │    │
-│  └─────────────────────────────────┘    │
-└─────────────────────────────────────────┘
-         ↕ API calls
-┌─────────────────────────────────────────┐
-│   External AI APIs (OpenAI/Anthropic)   │
-└─────────────────────────────────────────┘
-```
 
-## Features
+## Notes
 
-- **Multi-Provider Support** - OpenAI and Anthropic with official SDKs
-- **File Processing** - PDF, DOCX, TXT, images, and code files
-- **MIME Validation** - Magic byte detection for security
-- **Error Handling** - Graceful error messages with proper HTTP status codes
-- **Responsive UI** - Works on desktop and mobile
-- **Type Safety** - Full TypeScript frontend + Pydantic models
-- **Docker Ready** - One-command deployment
-- **API Documentation** - Auto-generated OpenAPI docs at /docs
-
-## Security
-
-- **Non-root Container** - Runs as unprivileged user
-- **No Persistent Storage** - Stateless containers
-- **Secrets via Environment** - API keys not in image
-- **Minimal Dependencies** - Small attack surface
-- **Read-only Filesystem** - Can add `--read-only` flag
+- The Rust server can serve static files from `./static` when that directory exists.
+- The root `Dockerfile` and `docker-compose.yml` still reflect an older Python-based deployment path and need to be updated separately to match the current Rust backend.
 
 ## License
 
