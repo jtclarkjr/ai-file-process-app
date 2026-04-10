@@ -12,7 +12,7 @@ class FileProcessorStore {
   // State
   providers = $state<ProviderInfo[]>([]);
   supportedTypes = $state<SupportedTypeInfo[]>([]);
-  selectedProvider = $state<string>("openai");
+  selectedProvider = $state<string>("anthropic");
   selectedOperation = $state<Operation>("summarize");
   selectedLanguage = $state<ResponseLanguage>("en");
   customPrompt = $state<string>("");
@@ -50,11 +50,7 @@ class FileProcessorStore {
       const json = await res.json();
       if (json.success && json.data) {
         this.providers = json.data;
-        // Select first available provider
-        const available = this.providers.find((p) => p.available);
-        if (available) {
-          this.selectedProvider = available.id;
-        }
+        this.selectedProvider = "anthropic";
         this.log("fetch providers: success", { count: json.data.length });
       }
     } catch (e) {
@@ -80,10 +76,6 @@ class FileProcessorStore {
     this.selectedFile = file;
     this.result = null;
     this.error = null;
-  }
-
-  setProvider(provider: string) {
-    this.selectedProvider = provider;
   }
 
   setOperation(operation: Operation) {

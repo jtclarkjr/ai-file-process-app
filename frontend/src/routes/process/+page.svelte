@@ -115,25 +115,6 @@
     {#if section2Open}
       <div class="options-grid">
         <div class="option-group">
-          <label for="provider">{text.aiProvider}</label>
-          <select
-            id="provider"
-            bind:value={fileProcessorStore.selectedProvider}
-            disabled={fileProcessorStore.processing}
-          >
-            {#each fileProcessorStore.providers as provider}
-              <option value={provider.id} disabled={!provider.available}>
-                {provider.name}
-                {#if !provider.available}({text.notConfigured}){/if}
-              </option>
-            {/each}
-          </select>
-          {#if fileProcessorStore.currentProvider?.supports_vision}
-            <span class="vision-badge">{text.supportsImages}</span>
-          {/if}
-        </div>
-
-        <div class="option-group">
           <label for="operation">{text.operation}</label>
           <select
             id="operation"
@@ -146,6 +127,10 @@
           </select>
         </div>
       </div>
+
+      {#if fileProcessorStore.currentProvider?.supports_vision}
+        <span class="vision-badge">{text.supportsImages}</span>
+      {/if}
 
       {#if fileProcessorStore.selectedOperation === 'custom'}
         <div class="custom-prompt">

@@ -9,13 +9,11 @@ export const TRANSLATIONS: Record<
     privacyBody: string;
     selectFile: string;
     configureProcessing: string;
-    aiProvider: string;
     operation: string;
     language: string;
     supportsImages: string;
     customPromptLabel: string;
     customPromptPlaceholder: string;
-    notConfigured: string;
     toggleSection: string;
     result: string;
     expand: string;
@@ -38,13 +36,11 @@ export const TRANSLATIONS: Record<
       "Your files are processed in-memory only and immediately discarded. No files are stored on our servers.",
     selectFile: "Select a File",
     configureProcessing: "Configure Processing",
-    aiProvider: "AI Provider",
     operation: "Operation",
     language: "Language",
     supportsImages: "Supports Images",
     customPromptLabel: "Custom Prompt",
     customPromptPlaceholder: "Enter your custom instructions for processing this file...",
-    notConfigured: "Not configured",
     toggleSection: "Toggle section",
     result: "Result",
     expand: "Expand",
@@ -66,13 +62,11 @@ export const TRANSLATIONS: Record<
       "ファイルはメモリ内でのみ処理され、直ちに破棄されます。サーバーには保存されません。",
     selectFile: "ファイルを選択",
     configureProcessing: "処理を設定",
-    aiProvider: "AIプロバイダー",
     operation: "操作",
     language: "言語",
     supportsImages: "画像対応",
     customPromptLabel: "カスタムプロンプト",
     customPromptPlaceholder: "このファイルを処理するための指示を入力してください...",
-    notConfigured: "未設定",
     toggleSection: "セクションの開閉",
     result: "結果",
     expand: "拡大",
