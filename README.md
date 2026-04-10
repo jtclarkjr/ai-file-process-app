@@ -137,7 +137,7 @@ VITE_API_BASE=http://localhost:8080
 
 # AI providers
 OPENAI_API_KEY=sk-...
-OPENAI_MODEL=gpt-4-turbo
+OPENAI_MODEL=gpt-5.4
 
 ANTHROPIC_API_KEY=sk-ant-...
 ANTHROPIC_MODEL=claude-3-sonnet-20240229
@@ -237,7 +237,6 @@ Run `make help` for the full list.
 ## Notes
 
 - The Rust server can serve static files from `./static` when that directory exists.
-- The root `Dockerfile` and `docker-compose.yml` still reflect an older Python-based deployment path and need to be updated separately to match the current Rust backend.
 
 ## License
 

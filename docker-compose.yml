@@ -4,18 +4,19 @@ services:
   # ==========================================================================
   backend-dev:
     build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: backend/Dockerfile.dev
     container_name: ai-file-processor-dev
     ports:
       - "8080:8080"
     volumes:
-      - ./backend/app:/app/app:cached
-      - ./backend/tests:/app/tests:cached
+      - ./Cargo.toml:/app/Cargo.toml:cached
+      - ./Cargo.lock:/app/Cargo.lock:cached
+      - ./backend:/app/backend:cached
     env_file:
       - .env
     environment:
-      - LOG_LEVEL=DEBUG
+      - RUST_LOG=backend=debug,tower_http=debug
       - HOST=0.0.0.0
       - PORT=8080
     stdin_open: true
@@ -36,7 +37,7 @@ services:
     env_file:
       - .env
     environment:
-      - LOG_LEVEL=INFO
+      - RUST_LOG=backend=info,tower_http=info
       - HOST=0.0.0.0
       - PORT=8080
     profiles:

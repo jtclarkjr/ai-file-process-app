@@ -60,7 +60,7 @@ docker-ps: ## Show running containers
 
 prod: prod-up ## Alias for prod-up
 
-prod-up: ## Start full stack (app + postgres) in Docker
+prod-up: ## Start full stack in Docker
 	docker-compose --profile production up -d
 
 prod-down: ## Stop full stack

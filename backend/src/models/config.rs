@@ -28,7 +28,7 @@ impl Config {
     Self {
       // AI Providers
       openai_api_key: env::var("OPENAI_API_KEY").ok(),
-      openai_model: env::var("OPENAI_MODEL").unwrap_or_else(|_| "gpt-4-turbo".to_string()),
+      openai_model: env::var("OPENAI_MODEL").unwrap_or_else(|_| "gpt-5.4".to_string()),
       anthropic_api_key: env::var("ANTHROPIC_API_KEY").ok(),
       anthropic_model: env::var("ANTHROPIC_MODEL")
         .unwrap_or_else(|_| "claude-3-sonnet-20240229".to_string()),
