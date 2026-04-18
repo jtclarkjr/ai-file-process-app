@@ -15,12 +15,11 @@
     "test:backend": "cd backend && cargo test",
     "test:watch": "cd frontend && bun run test",
     "check": "cd frontend && bun run check",
-    "fmt": "dprint fmt && prettier --write \"**/*.svelte\" --ignore-path .gitignore",
-    "fmt:check": "dprint check && prettier --check \"**/*.svelte\" --ignore-path .gitignore"
+    "fmt": "oxfmt . && prettier --write \"**/*.svelte\" --ignore-path .gitignore",
+    "fmt:check": "oxfmt --check . && prettier --check \"**/*.svelte\" --ignore-path .gitignore"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
-    "dprint": "^0.49.0",
     "prettier": "^3.0.0",
     "prettier-plugin-svelte": "^3.0.0"
   }

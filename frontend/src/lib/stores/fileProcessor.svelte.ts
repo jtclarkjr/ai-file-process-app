@@ -7,7 +7,6 @@ import type {
   SupportedTypeInfo,
 } from "$lib/types/fileProcessor";
 
-// Svelte 5 runes-based store
 class FileProcessorStore {
   // State
   providers = $state<ProviderInfo[]>([]);
